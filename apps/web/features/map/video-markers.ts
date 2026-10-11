@@ -24,9 +24,19 @@ export function syncVideoMarkers(
     }
   }
   for (const video of videos) {
-    if (markers.has(video.id)) continue;
+    const at: [number, number] = [video.longitude, video.latitude];
+    const existing = markers.get(video.id);
+    if (existing) {
+      // The video may have moved, and its photo links are signed afresh on every read. An
+      // open popup keeps its loaded photos: setDOMContent would pull focus into it on each pan.
+      existing.setLngLat(at);
+      labelMarker(existing.getElement(), video);
+      const popup = existing.getPopup();
+      if (!popup.isOpen()) popup.setDOMContent(popupContent(video));
+      continue;
+    }
     const marker = new maplibregl.Marker({ element: markerElement(video) })
-      .setLngLat([video.longitude, video.latitude])
+      .setLngLat(at)
       .setPopup(new maplibregl.Popup({ offset: 18, maxWidth: "280px" }).setDOMContent(popupContent(video)))
       .addTo(map);
     markers.set(video.id, marker);
@@ -36,17 +46,23 @@ export function syncVideoMarkers(
 function markerElement(video: LocatedVideo): HTMLElement {
   const element = document.createElement("button");
   element.type = "button";
-  element.setAttribute("aria-label", `${video.title}: ${video.potholeCount} potholes found here`);
   element.style.cssText =
     "position:relative;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#292929;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer;padding:0";
   element.innerHTML =
     '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>';
   const count = document.createElement("span");
-  count.textContent = String(video.potholeCount);
   count.style.cssText =
     "position:absolute;top:-8px;right:-8px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#db7979;color:#fff;font:600 11px/18px Inter,sans-serif;text-align:center;border:1.5px solid #fff";
   element.appendChild(count);
+  labelMarker(element, video);
   return element;
+}
+
+/** Updated in place: MapLibre binds the popup to this element, so it is never replaced. */
+function labelMarker(element: HTMLElement, video: LocatedVideo): void {
+  element.setAttribute("aria-label", `${video.title}: ${video.potholeCount} potholes found here`);
+  const count = element.querySelector("span");
+  if (count) count.textContent = String(video.potholeCount);
 }
 
 function popupContent(video: LocatedVideo): HTMLElement {

@@ -1,0 +1,54 @@
+Judge brief template for supplementary pooled clusters (ai/yolo26/pool_unjudged.py).
+
+Copied verbatim from the frame-level briefs in output/model-eval/judging-t025/rules.md, section
+3b (judge A) and 3c (judge B). Only the paths, the ids, the set descriptions, the output JSON
+shape and one extra READ-ONLY sentence (output/yolo26/) differ. `pool_unjudged build` fills the
+$placeholders for each chunk into briefs/chunk-NN-A.txt and briefs/chunk-NN-B.txt. Send a judge
+only the text below its own marker line, never this header and never the other judge's brief.
+
+=== JUDGE A ===
+You are an independent, blind judge labelling road-defect detections for a model evaluation. Another judge is labelling the same items separately; do not try to coordinate. Your verdicts become the ground truth that decides which AI model is best, so be careful and consistent.
+
+READ-ONLY: do not modify or create any project files. Only open the images listed below (sheets and overview frames). Do NOT open any .json, .md, or .py files, and in particular never open anything under ai/evaluation/pooled/, docs/, or any clusters.json/verdicts.json/scores.json — they would reveal which model drew each box or what someone else concluded. Never open anything under output/yolo26/ except the sheets/ and overview/ images under $root/.
+
+WHAT YOU ARE LOOKING AT
+Frames from a car's built-in wide-angle dashcam on Tashkent streets (1920x1080; a black overlay strip with speed, date and an ID runs along the top; the car's dark bonnet and windscreen reflections show along the bottom); video-4 instead is a phone clip of a badly broken road filmed in portrait (many water-filled holes). Several detectors drew boxes; overlapping boxes from different detectors were merged into one "cluster". Each cluster is shown once as a crop tile on a sheet, with the box drawn in yellow and a label "#<id> f_<frame>". Model names and confidence scores are deliberately hidden. Frames were taken 4 per second in video-1 to video-3, so f_0001 is at 0.0 s, f_0005 at 1.0 s, and so on; 2 per second in dashcam-0939 and dashcam-1215.
+
+Root: $root/
+$set_count (judge every cluster in every set):
+$sets
+Each set also has <set>/overview/<frame>.jpg: the full frame with every cluster box drawn and numbered. An overview frame can also show boxes numbered outside your id ranges; judge only the ids listed above. Open the overview frame named in a tile's label whenever the crop alone is ambiguous (context often decides: an oval with a rim in the middle of the lane is usually a manhole; a pale blob that stays in the same place on the glass across frames is a windscreen reflection or rain drop, not the road).
+
+ONE VERDICT PER CLUSTER:
+- "pothole": a hole or depression in the road surface: a visible broken edge, cavity or missing chunk of asphalt. Water-filled counts when its rim/broken edge is visible. A box over a tight group of holes counts.
+- "not": manhole or utility cover (round/oval/rectangular lid, even if slightly sunken); road paint (lane dashes, arrows, crosswalk stripes, stop lines); level patched/repaired asphalt; a crack line with no missing material; shadow; flat puddle or wet patch with no broken edge; speed bump; curb/kerb; drain grate; vehicle, person, debris; camera overlay text; the car's own bonnet/dashboard, reflections on the windscreen or rain drops on the glass; image-corruption artifacts.
+- "unsure": you genuinely cannot tell, even with the overview frame (e.g. a tiny distant dark blob).
+
+Method: open every sheet in order; for each tile decide; open overview frames as needed. Write your judging rules nowhere else — just apply the ones above. Before finishing, verify your counts match the cluster totals ($totals) and that every id in each set's range ($ranges) appears exactly once per set.
+
+OUTPUT: ${save}Your FINAL MESSAGE must contain the complete verdicts as ONE fenced JSON block of exactly this shape (ids as strings, every id present):
+$json_example
+After the JSON, add a short summary: counts per verdict per set, and the 3–5 most common false-alarm types you saw.
+=== JUDGE B ===
+You are an independent, blind judge labelling road-defect detections for a model evaluation. Another judge is labelling the same items separately; do not try to coordinate. Your verdicts become the ground truth that decides which AI model is best, so be careful and consistent.
+
+READ-ONLY: do not modify or create any project files. Only open the images listed below (sheets and overview frames). Do NOT open any .json, .md, or .py files, and in particular never open anything under ai/evaluation/pooled/, docs/, or any clusters.json/verdicts.json/scores.json — they would reveal which model drew each box or what someone else concluded. Never open anything under output/yolo26/ except the sheets/ and overview/ images under $root/.
+
+WHAT YOU ARE LOOKING AT
+Frames from a car's built-in wide-angle dashcam on Tashkent streets (1920x1080; a black overlay strip with speed, date and an ID runs along the top; the car's dark bonnet and windscreen reflections show along the bottom); video-4 instead is a phone clip of a badly broken road filmed in portrait (many water-filled holes). Several detectors drew boxes; overlapping boxes from different detectors were merged into one "cluster". Each cluster is shown once as a crop tile on a sheet, with the box drawn in yellow and a label "#<id> f_<frame>". Model names and confidence scores are deliberately hidden. Frames were taken 4 per second in video-1 to video-3, so f_0001 is at 0.0 s, f_0005 at 1.0 s, and so on; 2 per second in dashcam-0939 and dashcam-1215.
+
+Root: $root/
+$set_count (judge every cluster in every set). To reduce order effects, $order.
+$sets
+Each set also has <set>/overview/<frame>.jpg: the full frame with every cluster box drawn and numbered. An overview frame can also show boxes numbered outside your id ranges; judge only the ids listed above. Open the overview frame named in a tile's label whenever the crop alone is ambiguous (context often decides: an oval with a rim in the middle of the lane is usually a manhole; a pale blob that stays in the same place on the glass across frames is a windscreen reflection or rain drop, not the road).
+
+ONE VERDICT PER CLUSTER:
+- "pothole": a hole or depression in the road surface: a visible broken edge, cavity or missing chunk of asphalt. Water-filled counts when its rim/broken edge is visible. A box over a tight group of holes counts.
+- "not": manhole or utility cover (round/oval/rectangular lid, even if slightly sunken); road paint (lane dashes, arrows, crosswalk stripes, stop lines); level patched/repaired asphalt; a crack line with no missing material; shadow; flat puddle or wet patch with no broken edge; speed bump; curb/kerb; drain grate; vehicle, person, debris; camera overlay text; the car's own bonnet/dashboard, reflections on the windscreen or rain drops on the glass; image-corruption artifacts.
+- "unsure": you genuinely cannot tell, even with the overview frame (e.g. a tiny distant dark blob).
+
+Method: open every sheet; for each tile decide; open overview frames as needed. Before finishing, verify your counts match the cluster totals ($totals) and that every id in each set's range ($ranges) appears exactly once per set.
+
+OUTPUT: ${save}Your FINAL MESSAGE must contain the complete verdicts as ONE fenced JSON block of exactly this shape (ids as strings, every id present):
+$json_example
+After the JSON, add a short summary: counts per verdict per set, and the 3–5 most common false-alarm types you saw.

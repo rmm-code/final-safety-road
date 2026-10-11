@@ -64,6 +64,16 @@ test("a sample opens from its published analysis, without downloading a detector
   expect(models).toEqual([]);
 });
 
+test("a sample opens on a plain-HTTP origin, which has no crypto.subtle", async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(window.crypto, "subtle", { value: undefined }));
+  await page.route(`**/api/v1/video-analyses/${VIDEO_2}`, (route) => route.fulfill({ json: DETAIL }));
+  await page.route("**/e2e/overlay.json", (route) => route.fulfill({ json: [] }));
+
+  await page.goto("/?video=video-2");
+
+  await expect(page.getByText("Total potholes")).toBeVisible();
+});
+
 test("a sample with no published analysis offers to analyse it in the browser", async ({ page }) => {
   await page.route(`**/api/v1/video-analyses/${VIDEO_2}`, (route) =>
     route.fulfill({ status: 404, json: { detail: "Video analysis not found" } }),
@@ -73,4 +83,62 @@ test("a sample with no published analysis offers to analyse it in the browser", 
 
   await expect(page.getByRole("button", { name: /analyse in your browser/i })).toBeVisible();
   await expect(page.getByText("Saved for everyone")).toHaveCount(0);
+});
+
+test("a sample whose video fails to load says so instead of hanging", async ({ page }) => {
+  await page.route(`**/api/v1/video-analyses/${VIDEO_2}`, (route) =>
+    route.fulfill({ status: 404, json: { detail: "Video analysis not found" } }),
+  );
+  await page.route("**/demo/video-2.mp4", (route) => route.abort());
+  // No manifest: "auto" falls back to the synthetic engine at once instead of downloading a model.
+  await page.route("**/models/model.json", (route) => route.fulfill({ status: 404, body: "" }));
+
+  await page.goto("/?video=video-2");
+  await page.getByRole("button", { name: /analyse in your browser/i }).click();
+
+  await expect(page.getByText(/the analysis failed: the video could not be loaded/i).first()).toBeVisible();
+});
+
+test("a saved video whose boxes cannot be loaded still shows its results", async ({ page }) => {
+  await page.route(`**/api/v1/video-analyses/${VIDEO_2}`, (route) => route.fulfill({ json: DETAIL }));
+  await page.route("**/e2e/overlay.json", (route) => route.abort());
+
+  await page.goto(`/videos/${VIDEO_2}`);
+
+  // The overlay query retries twice, about 3 s, before it gives up.
+  await expect(page.getByText("Total potholes")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/boxes could not be loaded/i)).toBeVisible();
+});
+
+test("putting a saved video on the map keeps its results on screen", async ({ page }) => {
+  const location = { latitude: 41.32528, longitude: 69.26345, accuracyM: 100, label: null };
+  let placed = false;
+  // The API signs its links afresh on every read: the same overlay, under a new URL.
+  await page.route(`**/api/v1/video-analyses/${VIDEO_2}`, (route) =>
+    route.fulfill({
+      json: placed
+        ? { ...DETAIL, location, overlayUrl: "/e2e/overlay.json?sig=2" }
+        : { ...DETAIL, overlayUrl: "/e2e/overlay.json?sig=1" },
+    }),
+  );
+  await page.route(`**/api/v1/video-analyses/${VIDEO_2}/location`, (route) => {
+    placed = true;
+    return route.fulfill({ json: { ...DETAIL, location } });
+  });
+  const refetched: string[] = [];
+  await page.route(/\/e2e\/overlay\.json/, (route) => {
+    if (route.request().url().endsWith("sig=1")) return route.fulfill({ json: [] });
+    // Left unanswered: a page waiting for it would sit on "Loading…".
+    refetched.push(route.request().url());
+  });
+
+  await page.goto(`/videos/${VIDEO_2}`);
+  await expect(page.getByText("Total potholes")).toBeVisible();
+  await page.getByRole("application", { name: /click where the video was filmed/i }).click({ position: { x: 80, y: 80 } });
+  await page.getByRole("button", { name: "Put it on the map" }).click();
+
+  // The button goes once the refetched detail, now placed, has rendered.
+  await expect(page.getByRole("button", { name: /put it on the map|placing/i })).toHaveCount(0);
+  await expect(page.getByText("Total potholes")).toBeVisible();
+  expect(refetched).toEqual([]);
 });

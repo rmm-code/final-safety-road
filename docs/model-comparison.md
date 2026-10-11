@@ -8,7 +8,7 @@ a badly broken road in Russia). Every number here comes from those four videos.
 
 | Setup | What reaches the map (judged reports) | Frame precision | Frame recall |
 | --- | --- | --- | --- |
-| Current model at 0.35 (what the app runs today) | 12 real, 1 false, 3 unsure | 74% | 35% |
+| Current model at 0.35 (the app's threshold until 2026-10-11) | 12 real, 1 false, 3 unsure | 74% | 35% |
 | **Current model at 0.25** | **17 real, 1 false, 2 unsure** | **74%** | **55%** |
 | mfranzon YOLO26m at 0.35 | 21 real, 1 false, 3 unsure | 64% | 49% |
 | **Merge: current + mfranzon + rezzzq at 0.35** | **32 real, 2 false, 5 unsure** | **66%** | **73%** |
@@ -27,7 +27,7 @@ a badly broken road in Russia). Every number here comes from those four videos.
 
 On the site, the four sample dashboards show the merge's results, analysed offline and
 published by `python -m ai.samples`. The live demo and the live drive run the current model
-alone, in the browser.
+alone, in the browser, at 0.25 since 2026-10-11.
 
 ## The videos
 

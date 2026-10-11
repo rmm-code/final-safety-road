@@ -6,6 +6,11 @@ import type { AnalysisSettings } from "./analysis-id";
  */
 export type Sample = {
   id: string;
+  /**
+   * analysisId(`demo:${id}`, SAMPLE_SETUP), where its published analysis is saved. Written
+   * out because crypto.subtle is missing on a plain-HTTP origin; samples.test.ts checks it.
+   */
+  analysisId: string;
   title: string;
   description: string;
   src: string;
@@ -19,13 +24,14 @@ export type Sample = {
 };
 
 /**
- * The setup the samples are published with: three open-source detectors merged, the best
- * result in docs/model-comparison.md. Frozen here, not read from config, so a threshold
- * change elsewhere never loses the published analyses.
+ * The setup the samples are published with: our YOLO26m, trained on public data only (it
+ * never saw these videos), at 0.25. Until 2026-10-11 it was the 3-model merge at 0.35.
+ * Frozen here, not read from config, so a threshold change elsewhere never loses the
+ * published analyses. Mirrors ai/samples/catalog.py; change both together.
  */
 export const SAMPLE_SETUP: AnalysisSettings = {
-  modelVersion: "pothole-road-anomaly-1.0.0+mfranzon-yolo26m-1.0.0+rezzzq-yolo12s-1.0.0",
-  confidenceThreshold: 0.35,
+  modelVersion: "pothole-yolo26m-public-0.1.0",
+  confidenceThreshold: 0.25,
   sampleFps: 12,
 };
 
@@ -35,6 +41,7 @@ export const DEFAULT_SAMPLE_ID = "video-2";
 export const SAMPLES: Sample[] = [
   {
     id: "video-1",
+    analysisId: "4d338afb-b05b-8a29-8d9f-d6f95c0f56e4",
     title: "Video 1",
     description: "Residential lane, Tashkent",
     src: "/demo/video-1.mp4",
@@ -46,6 +53,7 @@ export const SAMPLES: Sample[] = [
   },
   {
     id: "video-2",
+    analysisId: "4d22bf79-4764-8ade-8328-d4d1bcddb0ac",
     title: "Video 2",
     description: "By Osiyo Grand, off Labzak street",
     src: "/demo/video-2.mp4",
@@ -63,6 +71,7 @@ export const SAMPLES: Sample[] = [
   },
   {
     id: "video-3",
+    analysisId: "6c354188-9578-816c-b18d-81165747d717",
     title: "Video 3",
     description: "Residential streets, Tashkent",
     src: "/demo/video-3.mp4",
@@ -73,6 +82,7 @@ export const SAMPLES: Sample[] = [
   },
   {
     id: "video-4",
+    analysisId: "4a26dba3-c07f-8513-92f2-cbcb6cb56982",
     title: "Video 4",
     description: "Badly broken road, Russia",
     src: "/demo/video-4.mp4",

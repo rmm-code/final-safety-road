@@ -5,19 +5,19 @@ import { Button } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import type { AppConfig } from "@/lib/config";
 import type { AnalysisProgress, VideoAnalysisResult } from "@/features/analyze/lib/analyse-video";
-import { analysisId, type AnalysisSettings } from "@/features/videos/lib/analysis-id";
-import { SAMPLE_SETUP, findSample, type Sample } from "@/features/videos/lib/samples";
+import type { AnalysisSettings } from "@/features/videos/lib/analysis-id";
+import { findSample, type Sample } from "@/features/videos/lib/samples";
 import { asResult, getVideoAnalysis, loadOverlay } from "@/features/videos/lib/video-api";
 import { BrowserAnalysis } from "./browser-analysis";
 import { DashboardLayout } from "./dashboard-layout";
+import { PublishedCache } from "./lib/published-cache";
 
 type Loaded = { result: VideoAnalysisResult; settings: AnalysisSettings; saved: boolean };
 
-/** Loaded analyses, kept for the tab so switching samples is instant. */
-const LOADED = new Map<string, Loaded>();
+const PUBLISHED = new PublishedCache<Loaded>();
 
 async function loadPublished(sample: Sample): Promise<Loaded | null> {
-  const stored = await getVideoAnalysis(await analysisId(`demo:${sample.id}`, SAMPLE_SETUP));
+  const stored = await getVideoAnalysis(sample.analysisId);
   if (!stored) return null;
   const frames = await loadOverlay(stored.overlayUrl);
   return {
@@ -39,7 +39,7 @@ export function SampleDashboard({ config, sampleId }: { config: AppConfig; sampl
 
 function SampleView({ config, sample }: { config: AppConfig; sample: Sample }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [loaded, setLoaded] = useState<Loaded | null>(() => LOADED.get(sample.id) ?? null);
+  const [loaded, setLoaded] = useState<Loaded | null>(() => PUBLISHED.get(sample.id));
   const [missing, setMissing] = useState<"absent" | "offline" | null>(null);
   const [analysing, setAnalysing] = useState(false);
   const [progress, setProgress] = useState<AnalysisProgress | null>(null);
@@ -52,7 +52,7 @@ function SampleView({ config, sample }: { config: AppConfig; sample: Sample }) {
       (published) => {
         if (cancelled) return;
         if (!published) return setMissing("absent");
-        LOADED.set(sample.id, published);
+        PUBLISHED.set(sample.id, published);
         setLoaded(published);
       },
       () => {
@@ -64,15 +64,11 @@ function SampleView({ config, sample }: { config: AppConfig; sample: Sample }) {
     };
   }, [loaded, sample]);
 
-  const onResult = useCallback(
-    (result: VideoAnalysisResult, settings: AnalysisSettings) => {
-      const local = { result, settings, saved: false };
-      LOADED.set(sample.id, local);
-      setLoaded(local);
-      setAnalysing(false);
-    },
-    [sample.id],
-  );
+  // Not cached: the next visit looks for the published analysis again.
+  const onResult = useCallback((result: VideoAnalysisResult, settings: AnalysisSettings) => {
+    setLoaded({ result, settings, saved: false });
+    setAnalysing(false);
+  }, []);
   const onError = useCallback((message: string) => {
     setError(message);
     setAnalysing(false);
@@ -105,7 +101,7 @@ function SampleView({ config, sample }: { config: AppConfig; sample: Sample }) {
         durationSeconds={loaded?.result.durationSeconds ?? progress?.durationSeconds ?? 0}
         pending={pending}
         saved={loaded ? (loaded.saved ? "saved" : "local") : null}
-        place={sample.placement ? { ...sample.placement } : null}
+        place={sample.placement}
         notice={
           missing && !loaded ? (
             <MissingNotice

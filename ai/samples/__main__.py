@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 from ai.evaluation.merged_detector import MergedDetector
@@ -16,6 +17,18 @@ from ai.inference.video import _apply_overrides
 from ai.samples.analyse import analyse
 from ai.samples.catalog import MODELS, SAMPLE_FPS, SAMPLES, THRESHOLD
 from ai.samples.publish import publish
+
+
+def reset_sample_output(folder: Path) -> None:
+    """Remove a sample's crops and saved analysis before a fresh analysis.
+
+    Track ids repeat across runs (track-001, ...), so a crop left by an earlier run would
+    be published as the photo of a new track that has none of its own.
+    """
+    crops = folder / "crops"
+    if crops.exists():
+        shutil.rmtree(crops)  # not ignore_errors: a half-cleared folder is the bug itself
+    (folder / "analysis.json").unlink(missing_ok=True)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -39,6 +52,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             detector = MergedDetector([create_detector(config, path) for path in MODELS])
             try:
+                reset_sample_output(folder)
                 analysis = analyse(sample.file, detector, config, folder / "crops")
             finally:
                 detector.close()

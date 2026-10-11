@@ -17,8 +17,9 @@ model:
     - pothole
 
 detection:
-  # Minimum detector confidence for a detection to enter the pipeline at all.
-  confidenceThreshold: 0.35
+  # Minimum detector confidence for a detection to enter the pipeline at all. 0.25 found the
+  # most real potholes for the same false reports on the four test videos (model-comparison.md).
+  confidenceThreshold: 0.25
   # IoU above which two raw boxes are considered the same object during NMS.
   nmsIouThreshold: 0.45
   maxDetections: 50

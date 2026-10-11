@@ -2,12 +2,7 @@
 
 import { useEffect } from "react";
 import type { AppConfig } from "@/lib/config";
-import {
-  AnalysisAbortedError,
-  analyseVideo,
-  type AnalysisProgress,
-  type VideoAnalysisResult,
-} from "@/features/analyze/lib/analyse-video";
+import { analyseVideo, type AnalysisProgress, type VideoAnalysisResult } from "@/features/analyze/lib/analyse-video";
 import { useVisionEngine } from "@/features/analyze/lib/use-vision-engine";
 import type { AnalysisSettings } from "@/features/videos/lib/analysis-id";
 
@@ -40,12 +35,16 @@ export function BrowserAnalysis({
     if (!info || !engine || !video) return;
     const controller = new AbortController();
     const run = async () => {
-      if (video.readyState < 1) {
-        await new Promise((resolve) => video.addEventListener("loadedmetadata", resolve, { once: true }));
+      // analyseVideo waits for metadata or an error event, but a video that has already
+      // failed fires no further events, so it would wait forever.
+      if (video.error) {
+        onError(`The video could not be loaded${video.error.message ? ` (${video.error.message})` : ""}.`);
+        return;
       }
       engine.reset?.();
       try {
         const result = await analyseVideo({ video, engine, config: config.vision, signal: controller.signal, onProgress });
+        if (controller.signal.aborted) return;
         video.currentTime = 0;
         onResult(result, {
           modelVersion: result.engine.modelVersion,
@@ -53,7 +52,9 @@ export function BrowserAnalysis({
           sampleFps: config.vision.analysis.sampleFps,
         });
       } catch (cause) {
-        if (!(cause instanceof AnalysisAbortedError)) onError(cause instanceof Error ? cause.message : String(cause));
+        // Once cancelled, anything that fails on the way out (a seek, a disposed engine) is
+        // not the analysis failing.
+        if (!controller.signal.aborted) onError(cause instanceof Error ? cause.message : String(cause));
       }
     };
     void run();

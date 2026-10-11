@@ -3,18 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // import Link from "next/link"; // only the parked sign-in link used it
 import type { Detection, VisionEngineInfo } from "@pothole/shared-types";
-import {
-  createVisionEngine,
-  resolveVisionConfig,
-  type DescribedVisionEngine,
-} from "@pothole/vision-web";
+import { createVisionEngine, type DescribedVisionEngine } from "@pothole/vision-web";
 import { Button, PageHeader, Panel } from "@/components/ui";
 import type { AppConfig } from "@/lib/config";
 import { OfflineEventQueue } from "@/lib/offline-queue";
 import { createApiClient } from "@/lib/api-client";
 import { encodeCanvas } from "@/lib/image-encoding";
 import { EventUploader, type UploadOutcome } from "@/lib/uploader";
-import { ThresholdControl } from "@/components/threshold-control";
 import { CameraStage, type LiveOverlay } from "./components/camera-stage";
 import { DriveEvents } from "./components/drive-events";
 import { DriveHud, formatDriveClock } from "./components/drive-hud";
@@ -48,17 +43,8 @@ export function DriveView({ config }: { config: AppConfig }) {
   const location = useLocation();
   const wakeLock = useWakeLock();
 
-  const [threshold, setThreshold] = useState(config.vision.detection.confidenceThreshold);
-  const visionConfig = useMemo(
-    () => resolveVisionConfig({ detection: { confidenceThreshold: threshold } }),
-    [threshold],
-  );
-  // The running recorder reads this on every frame, so the slider takes effect mid-drive
-  // rather than only on the next session.
-  const thresholdRef = useRef(threshold);
-  useEffect(() => {
-    thresholdRef.current = threshold;
-  }, [threshold]);
+  // No threshold control here: a driver never adjusts the detector mid-drive.
+  const visionConfig = config.vision;
 
   const [engineInfo, setEngineInfo] = useState<VisionEngineInfo | null>(null);
   const [engineError, setEngineError] = useState<string | null>(null);
@@ -426,14 +412,7 @@ export function DriveView({ config }: { config: AppConfig }) {
           </Panel>
 
           <Panel title="Detector" subtitle="Model and runtime on this phone" icon="models">
-            <EngineLine info={engineInfo} />
-            <ThresholdControl
-              value={threshold}
-              defaultValue={config.vision.detection.confidenceThreshold}
-              onChange={setThreshold}
-              onReset={() => setThreshold(config.vision.detection.confidenceThreshold)}
-              hint="Takes effect immediately, mid-drive. Lower finds more and reports more mistakes."
-            />
+            <EngineLine info={engineInfo} threshold={visionConfig.detection.confidenceThreshold} />
           </Panel>
 
           <Panel title="Session" subtitle="Frames, events and uploads" icon="dashboard">
@@ -465,7 +444,7 @@ export function DriveView({ config }: { config: AppConfig }) {
  * WebGPU or WASM is decided by the browser, not by us, and it is the difference between
  * a usable frame rate and a useless one. Shown so it can be checked on the phone itself.
  */
-function EngineLine({ info }: { info: VisionEngineInfo | null }) {
+function EngineLine({ info, threshold }: { info: VisionEngineInfo | null; threshold: number }) {
   if (!info) return <p className="mb-3 text-[12px] text-muted">Loading the detector...</p>;
   const runtime: Record<string, string> = { webgpu: "WebGPU", wasm: "WASM (CPU)", http: "Server" };
   return (
@@ -474,6 +453,8 @@ function EngineLine({ info }: { info: VisionEngineInfo | null }) {
       <dd className="font-mono text-primary">{runtime[info.backend] ?? info.backend}</dd>
       <dt className="text-muted">Model</dt>
       <dd className="truncate font-mono text-primary">{info.modelVersion}</dd>
+      <dt className="text-muted">Confidence threshold</dt>
+      <dd className="font-mono text-primary">{threshold}</dd>
     </dl>
   );
 }

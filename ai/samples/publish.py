@@ -7,8 +7,12 @@ from pathlib import Path
 
 import requests
 
-from ai.samples.catalog import Sample
+from ai.samples.catalog import MODEL_VERSION, Sample
 from ai.samples.ids import analysis_id
+
+
+class PublishError(RuntimeError):
+    """Publishing would file an analysis where the dashboard never looks, or mix two runs."""
 
 
 def _upload(target: dict, data: bytes, content_type: str) -> bool:
@@ -21,11 +25,31 @@ def _upload(target: dict, data: bytes, content_type: str) -> bool:
     return response.ok
 
 
+def _check_same_run(sample: Sample, aid: str, stored: list[dict], analysis: dict) -> None:
+    """The API keeps an id's first potholes, so uploads from another run would mix the two."""
+    old = sorted(p["trackId"] for p in stored)  # the API answers in clip order
+    new = sorted(p["trackId"] for p in analysis["potholes"])
+    if old != new:
+        raise PublishError(
+            f"{sample.id}: {aid} is already published from another run (stored {len(old)} "
+            f"potholes, this analysis {len(new)}; only stored: "
+            f"{', '.join(sorted(set(old) - set(new))) or 'none'}; only here: "
+            f"{', '.join(sorted(set(new) - set(old))) or 'none'}). The API never replaces "
+            "stored potholes, so publishing would attach this run's photos to them."
+        )
+
+
 def publish(
     api: str, sample: Sample, analysis: dict, crops_dir: Path, threshold: float, fps: float
 ) -> str:
     """Returns the analysis id; publishing the same analysis again changes nothing."""
-    aid = analysis_id(f"demo:{sample.id}", analysis["modelVersion"], threshold, fps)
+    if analysis["modelVersion"] != MODEL_VERSION:
+        raise PublishError(
+            f"{sample.id}: analysed with {analysis['modelVersion']!r}, but the dashboard "
+            f"requests {MODEL_VERSION!r} (SAMPLE_SETUP in apps/web/features/videos/lib/"
+            "samples.ts), so it would never find this analysis's id"
+        )
+    aid = analysis_id(f"demo:{sample.id}", MODEL_VERSION, threshold, fps)
     crops = {p["trackId"]: crops_dir / f"{p['trackId']}.jpg" for p in analysis["potholes"]}
     body = {
         "id": aid,
@@ -58,7 +82,10 @@ def publish(
     }
     created = requests.post(f"{api}/api/v1/video-analyses", json=body, timeout=60)
     created.raise_for_status()
-    uploads = created.json()["uploads"]
+    answer = created.json()
+    if created.status_code == 200:  # already saved: only the same run may finish its uploads
+        _check_same_run(sample, aid, answer["analysis"]["potholes"], analysis)
+    uploads = answer["uploads"]
 
     done: dict = {"overlay": False, "poster": False, "video": False, "crops": [], "fulls": []}
     if uploads.get("overlay"):

@@ -22,8 +22,6 @@ import { FramePanel } from "./components/frame-panel";
 import { LiveBrowserTest } from "./components/live-browser-test";
 import { Scorecard } from "./components/scorecard";
 
-/** The product's working threshold, from ai/configs/vision.yaml. The slider starts here. */
-const PRODUCT_THRESHOLD = 0.35;
 const PLAY_INTERVAL_MS = 450;
 
 /**
@@ -60,7 +58,7 @@ function Comparison({ data, config }: { data: CompareIndex; config: AppConfig })
   const [modelB, setModelB] = useState(
     data.models.find((model) => model.id === "ens_all3")?.id ?? data.models[1]?.id ?? "",
   );
-  const [threshold, setThreshold] = useState(PRODUCT_THRESHOLD);
+  const [threshold, setThreshold] = useState(config.vision.detection.confidenceThreshold);
   const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(false);
 
@@ -166,7 +164,7 @@ function Comparison({ data, config }: { data: CompareIndex; config: AppConfig })
               onChange={(event) => setThreshold(Number(event.target.value))}
               className="mt-2 w-full accent-[#2563EB]"
             />
-            <span className="text-[11px] text-muted">The product uses {PRODUCT_THRESHOLD}.</span>
+            <span className="text-[11px] text-muted">The product uses {config.vision.detection.confidenceThreshold}.</span>
           </label>
         </div>
 

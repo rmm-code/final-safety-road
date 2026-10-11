@@ -10,13 +10,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ONNX = Path("apps/web/public/models")
-MODELS = (
-    ONNX / "pothole-road-anomaly-1.0.0.onnx",
-    ONNX / "candidates/mfranzon-yolo26m/mfranzon-yolo26m-1.0.0.onnx",
-    ONNX / "candidates/rezzzq-yolo12s/rezzzq-yolo12s-1.0.0.onnx",
-)
-THRESHOLD = 0.35
+# Our YOLO26m, trained 2026-10-11 on public data only (ai/yolo26/), so it never saw these
+# four videos. Until then the samples ran the 3-model merge at 0.35 (current YOLOv8m +
+# mfranzon YOLO26m + rezzzq YOLO12s); a tuple of several models is merged again.
+MODELS = (ONNX / "candidates/yolo26m-public/pothole-yolo26m-public-0.1.0.onnx",)
+THRESHOLD = 0.25
 SAMPLE_FPS = 12.0
+# Must equal SAMPLE_SETUP.modelVersion in apps/web/features/videos/lib/samples.ts: it is
+# part of the analysis id, so publishing refuses an analysis made with any other model.
+MODEL_VERSION = "pothole-yolo26m-public-0.1.0"
 
 
 @dataclass(frozen=True)

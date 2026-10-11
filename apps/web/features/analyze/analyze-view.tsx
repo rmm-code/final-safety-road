@@ -4,14 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import type { SeverityLevel, VisionEngineInfo } from "@pothole/shared-types";
-import {
-  createVisionEngine,
-  resolveVisionConfig,
-  type DescribedVisionEngine,
-} from "@pothole/vision-web";
+import { createVisionEngine, type DescribedVisionEngine } from "@pothole/vision-web";
 import { Button, PageHeader, Panel, SeverityBadge } from "@/components/ui";
 import { Icon } from "@/components/icons";
-import { ThresholdControl } from "@/components/threshold-control";
 import { formatDuration, formatPercent, formatTimecode } from "@/lib/format";
 import type { AppConfig } from "@/lib/config";
 import {
@@ -32,7 +27,8 @@ import type { Sample } from "@/features/videos/lib/samples";
 import { analysisId, fileSource, type AnalysisSettings } from "@/features/videos/lib/analysis-id";
 import { AnalysisNote } from "@/features/videos/components/analysis-note";
 import { saveAnalysis } from "@/features/videos/lib/video-api";
-import { SavePanel, type SaveState } from "./components/save-panel";
+import { SaveNote } from "./components/save-note";
+import { useSaveState } from "./lib/use-save-state";
 
 type Status = "idle" | "ready" | "analyzing" | "done" | "error";
 
@@ -53,13 +49,7 @@ export function AnalyzeView({
   const engineRef = useRef<DescribedVisionEngine | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const [threshold, setThreshold] = useState(config.vision.detection.confidenceThreshold);
-  // One derived config drives inference, tracking and the exported report, so a run can
-  // never be analysed at one threshold and reported at another.
-  const visionConfig = useMemo(
-    () => resolveVisionConfig({ detection: { confidenceThreshold: threshold } }),
-    [threshold],
-  );
+  const visionConfig = config.vision;
 
   const [engineInfo, setEngineInfo] = useState<VisionEngineInfo | null>(null);
   const [engineError, setEngineError] = useState<string | null>(null);
@@ -74,8 +64,8 @@ export function AnalyzeView({
   // The demo video being analysed, if any: it knows when and, sometimes, where it was filmed.
   const [sample, setSample] = useState<Sample | null>(null);
   const [loadingSample, setLoadingSample] = useState<string | null>(null);
-  const [saveState, setSaveState] = useState<SaveState>({ kind: "idle" });
-  // The settings the shown result was analysed with; the threshold may move afterwards.
+  const { saveState, beginRun, setSaveStateFor, saveFor } = useSaveState();
+  // The settings the shown result was analysed with.
   const [analysedWith, setAnalysedWith] = useState<AnalysisSettings | null>(null);
 
   // Resolve the detector once. Selection is reported, never silent: if no model is
@@ -130,6 +120,8 @@ export function AnalyzeView({
   );
 
   const handleSelectFile = useCallback((selectedFile: File, fromSample: Sample | null = null) => {
+    beginRun();
+    setAnalysedWith(null);
     setSample(fromSample);
     setFile(selectedFile);
     setVideoUrl(URL.createObjectURL(selectedFile));
@@ -139,7 +131,7 @@ export function AnalyzeView({
     setError(null);
     setAspectRatio(null);
     setStatus("ready");
-  }, []);
+  }, [beginRun]);
 
   const handleSelectSample = useCallback(
     async (demo: Sample) => {
@@ -171,10 +163,10 @@ export function AnalyzeView({
     // Restart the synthetic sequence so re-analysing a file reproduces its report.
     engine.reset?.();
 
+    const run = beginRun();
     setStatus("analyzing");
     setError(null);
     setResult(null);
-    setSaveState({ kind: "idle" });
     setSelectedTrackId(null);
     setProgress(null);
 
@@ -196,32 +188,27 @@ export function AnalyzeView({
       video.currentTime = 0;
       if (sample) {
         // A sample already has its published analysis; a second copy would duplicate it.
-        setSaveState({ kind: "sample", href: `/?video=${sample.id}` });
+        setSaveStateFor(run, { kind: "sample", href: `/?video=${sample.id}` });
       } else if (!analysis.engine.isSynthetic) {
         // Saved for everyone: the record, the overlay and photos, then the video itself.
-        setSaveState({ kind: "saving" });
         const settings = {
           confidenceThreshold: visionConfig.detection.confidenceThreshold,
           sampleFps: visionConfig.analysis.sampleFps,
         };
-        void (async () => {
-          try {
-            const id = await analysisId(await fileSource(file), { modelVersion: analysis.engine.modelVersion, ...settings });
-            await saveAnalysis({
-              id,
-              result: analysis,
-              title: file.name,
-              fileName: file.name,
-              demo: null,
-              file,
-              recordedAt: null,
-              settings,
-            });
-            setSaveState({ kind: "saved", href: `/videos/${id}` });
-          } catch (cause) {
-            setSaveState({ kind: "error", message: cause instanceof Error ? cause.message : String(cause) });
-          }
-        })();
+        void saveFor(run, async () => {
+          const id = await analysisId(await fileSource(file), { modelVersion: analysis.engine.modelVersion, ...settings });
+          await saveAnalysis({
+            id,
+            result: analysis,
+            title: file.name,
+            fileName: file.name,
+            demo: null,
+            file,
+            recordedAt: null,
+            settings,
+          });
+          return `/videos/${id}`;
+        });
       }
     } catch (cause) {
       if (cause instanceof AnalysisAbortedError) {
@@ -233,7 +220,7 @@ export function AnalyzeView({
     } finally {
       abortRef.current = null;
     }
-  }, [file, sample, visionConfig]);
+  }, [beginRun, file, sample, saveFor, setSaveStateFor, visionConfig]);
 
   const handleSelectPothole = useCallback((pothole: AnalysedPothole) => {
     setSelectedTrackId(pothole.trackId);
@@ -261,7 +248,7 @@ export function AnalyzeView({
         title={variant === "home" ? "Find potholes in a road video" : "Analyze video"}
         description={
           variant === "home"
-            ? "Upload a dashcam or phone video, or try one of ours. The detector runs in this browser and grades every pothole it finds; the finished analysis, with the video and its photos, is saved so anyone can open it."
+            ? "Upload a dashcam or phone video, or try one of ours. The detector runs in this browser and grades every pothole it finds; the finished analysis is saved so anyone can open it. A video file has no GPS, so you place it on the map yourself."
             : "Detect, track and grade potholes in recorded footage, then place the video on the map to save what it found."
         }
         actions={
@@ -305,9 +292,9 @@ export function AnalyzeView({
         </div>
       )}
       {engineInfo && <SyntheticEngineNotice engine={engineInfo} />}
+      <SaveNote state={saveState} />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <Panel title="Source video" subtitle="Recorded MP4, MOV or WebM road footage" icon="video">
+      <Panel title="Source video" subtitle="Recorded MP4, MOV or WebM road footage" icon="video">
           <VideoPicker
             file={file}
             disabled={analysing}
@@ -360,52 +347,8 @@ export function AnalyzeView({
           )}
 
           {analysing && progress && <AnalysisProgressBar progress={progress} />}
-        </Panel>
+      </Panel>
 
-        <div className="space-y-4">
-          <Panel title="Run settings" subtitle="Defaults from ai/configs/vision.yaml" icon="models">
-            <ThresholdControl
-              value={threshold}
-              defaultValue={config.vision.detection.confidenceThreshold}
-              disabled={analysing}
-              onChange={setThreshold}
-              onReset={() => setThreshold(config.vision.detection.confidenceThreshold)}
-            />
-
-            <dl className="mt-3 space-y-2 border-t border-border pt-3 text-[13px]">
-              <SettingRow label="Sampling">
-                <span className="tabular font-mono">{visionConfig.analysis.sampleFps} FPS</span>
-              </SettingRow>
-              <SettingRow label="Confirmation">
-                <span className="tabular font-mono">
-                  {visionConfig.tracking.minObservations} sightings
-                </span>
-              </SettingRow>
-            </dl>
-          </Panel>
-
-          {result && Object.keys(result.otherClasses).length > 0 && (
-            <Panel title="Also recognised" subtitle="Seen by the model, not reported" icon="info">
-              <dl className="space-y-2 text-[13px]">
-                {Object.entries(result.otherClasses)
-                  .sort(([, a], [, b]) => b - a)
-                  .map(([name, count]) => (
-                    <SettingRow key={name} label={name}>
-                      <span className="tabular font-mono">{count}</span>
-                    </SettingRow>
-                  ))}
-              </dl>
-              <p className="mt-3 border-t border-border pt-3 text-[11px] leading-4 text-muted">
-                This product reports potholes only. These are counted so it is visible what
-                the detector found beyond them - the evidence for whether another defect
-                type is worth modelling on these roads.
-              </p>
-            </Panel>
-          )}
-
-          <SavePanel state={saveState} />
-        </div>
-      </div>
 
       {result && (
         <Panel
@@ -461,15 +404,35 @@ export function AnalyzeView({
           )}
         </Panel>
 
-        {selected ? (
-          <PotholeDetail pothole={selected} />
-        ) : (
-          <Panel title="Selected pothole" icon="potholes">
-            <p className="text-[13px] leading-5 text-muted">
-              Choose a row to seek the video to its evidence frame.
-            </p>
-          </Panel>
-        )}
+        <div className="space-y-4">
+          {selected ? (
+            <PotholeDetail pothole={selected} />
+          ) : (
+            <Panel title="Selected pothole" icon="potholes">
+              <p className="text-[13px] leading-5 text-muted">
+                Choose a row to seek the video to its evidence frame.
+              </p>
+            </Panel>
+          )}
+          {result && Object.keys(result.otherClasses).length > 0 && (
+            <Panel title="Also recognised" subtitle="Seen by the model, not reported" icon="info">
+              <dl className="space-y-2 text-[13px]">
+                {Object.entries(result.otherClasses)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([name, count]) => (
+                    <SettingRow key={name} label={name}>
+                      <span className="tabular font-mono">{count}</span>
+                    </SettingRow>
+                  ))}
+              </dl>
+              <p className="mt-3 border-t border-border pt-3 text-[11px] leading-4 text-muted">
+                This product reports potholes only. These are counted so it is visible what
+                the detector found beyond them - the evidence for whether another defect
+                type is worth modelling on these roads.
+              </p>
+            </Panel>
+          )}
+        </div>
       </div>
     </div>
   );

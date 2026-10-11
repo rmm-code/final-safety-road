@@ -92,7 +92,7 @@ export const DEFAULT_VISION_CONFIG: VisionConfig = {
     classNames: ["pothole"],
   },
   detection: {
-    confidenceThreshold: 0.35,
+    confidenceThreshold: 0.25,
     nmsIouThreshold: 0.45,
     maxDetections: 50,
   },

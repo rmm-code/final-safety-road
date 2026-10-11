@@ -56,6 +56,12 @@ export type OnnxEngineOptions = {
   executionProviders?: string[];
   /** ONNX Runtime log severity. Defaults to "error"; raise it to debug the runtime. */
   logLevel?: OrtLogLevel;
+  /**
+   * Also return potholes down to this confidence, below the configured threshold, for a
+   * caller that applies its own threshold afterwards. Other classes are still counted
+   * only at the configured threshold.
+   */
+  confidenceFloor?: number;
   selectionReason?: string;
 };
 
@@ -203,15 +209,17 @@ export class OnnxVisionEngine implements DescribedVisionEngine {
       if (!raw) throw new Error("Model produced no detection output");
 
       const manifest = this.options.manifest;
+      const threshold = manifest.confidenceThreshold ?? this.config.detection.confidenceThreshold;
       return decodeDetections(raw, {
         classNames: manifest.classNames,
-        confidenceThreshold: manifest.confidenceThreshold ?? this.config.detection.confidenceThreshold,
+        confidenceThreshold: Math.min(threshold, this.options.confidenceFloor ?? threshold),
         nmsIouThreshold: manifest.nmsIouThreshold ?? this.config.detection.nmsIouThreshold,
         maxDetections: this.config.detection.maxDetections,
         transform,
         ...(manifest.outputLayout ? { layout: manifest.outputLayout } : {}),
         ...(manifest.maskCoefficients ? { maskCoefficients: manifest.maskCoefficients } : {}),
-        onSkippedClass: (className) => {
+        onSkippedClass: (className, confidence) => {
+          if (confidence < threshold) return;
           this.otherClasses[className] = (this.otherClasses[className] ?? 0) + 1;
         },
       });

@@ -28,6 +28,11 @@ export type CreateVisionEngineOptions = {
    * on WebGPU works on WASM, which is what a phone without WebGPU would run.
    */
   executionProviders?: string[];
+  /**
+   * ONNX only: also return potholes down to this confidence, for a caller that filters at
+   * its own threshold (the /analyze slider). Mock and server output is not thresholded.
+   */
+  confidenceFloor?: number;
   /** Overrides the synthetic engine seed. Only affects the mock. */
   seed?: number;
   fetchImpl?: typeof fetch;
@@ -95,6 +100,7 @@ export async function createVisionEngine(
       ...(options.wasmPath ? { wasmPath: options.wasmPath } : {}),
       ...(options.ortLogLevel ? { logLevel: options.ortLogLevel } : {}),
       ...(options.executionProviders ? { executionProviders: options.executionProviders } : {}),
+      ...(options.confidenceFloor !== undefined ? { confidenceFloor: options.confidenceFloor } : {}),
       selectionReason,
     });
   };

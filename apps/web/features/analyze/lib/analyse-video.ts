@@ -44,8 +44,8 @@ export type FrameDetection = {
   detection: Detection;
   /**
    * Local track this detection was associated with, or null when it was not tracked
-   * (below the confidence threshold, or an isolated blob). Keeping both lets the
-   * overlay show what the detector produced next to what the pipeline actually counted.
+   * (an empty box). Keeping both lets the overlay show what the detector produced next
+   * to what the pipeline actually counted.
    */
   trackId: string | null;
 };
@@ -70,7 +70,7 @@ export type VideoAnalysisResult = {
   framesAnalysed: number;
   /** Tracks that never met the confirmation rules. Reported, not hidden. */
   rejectedTracks: number;
-  /** Total raw per-frame detections, before tracking collapsed them. */
+  /** Per-frame detections at or above the run's threshold, before tracking collapsed them. */
   rawDetections: number;
   /** Classes the model recognised but this product does not report, by name. */
   otherClasses: Record<string, number>;
@@ -128,6 +128,9 @@ export async function analyseVideo(options: AnalyseVideoOptions): Promise<VideoA
   const selector = new BestFrameSelector(config);
 
   const sampleFps = config.analysis.sampleFps;
+  // The engine may decode below this run's threshold (the /analyze slider goes lower than
+  // the default), so it is applied here, before counts, overlay and tracking alike.
+  const threshold = config.detection.confidenceThreshold;
   // Ceiling, not floor + 1: the last sample sits strictly before the end of the video,
   // because there is no frame at exactly `duration`. This matches the Python CLI, which
   // samples the frames it actually decodes.
@@ -156,7 +159,7 @@ export async function analyseVideo(options: AnalyseVideoOptions): Promise<VideoA
     await seekTo(video, seconds);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const detections = await engine.infer(canvas);
+    const detections = (await engine.infer(canvas)).filter((d) => d.confidence >= threshold);
     rawDetections += detections.length;
     framesAnalysed += 1;
 

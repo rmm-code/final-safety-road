@@ -268,8 +268,8 @@ Uses IndexedDB and retries uploads safely.
 
 ## Project status (audited 2026-10-10)
 
-Milestones 0-7 exist as code and every suite passes (vitest 148 + 151, Playwright 23, AI
-pytest 164, API pytest 283 on real PostGIS). That is not the same as working. The full
+Milestones 0-7 exist as code and every suite passes (vitest 155 + 157, Playwright 27, AI
+pytest 172, API pytest 283 on real PostGIS). That is not the same as working. The full
 audit, with file:line evidence for everything below, is `docs/audit.md`. Work now is
 fixing, measuring and improving, not new milestones.
 
@@ -380,8 +380,10 @@ clip"), two blind AI judges, pooled reference in `ai/evaluation/pooled/` (`sets-
   17 real / 1 false; the merge of this model + mfranzon + rezzzq at 0.35, 32 real / 2 false.
 - Frame level: this model at 0.25 has precision 74%, recall 55%; the merge 66% / 73%.
 - The merge runs three models per frame (and rezzzq fails on WebGPU), so it suits video
-  files; this model at 0.25 is the best single model for a live drive. The live product's
-  choice and the threshold change are the team's; neither is applied yet.
+  files; this model at 0.25 is the best single model for a live drive.
+- Applied 2026-10-11: the product threshold is 0.25 (`ai/configs/vision.yaml`), and neither
+  the live drive nor the live demo has a threshold control. The published samples keep the merge at 0.35, frozen in
+  `SAMPLE_SETUP`.
 
 ### Read a dataset's labels, not its class names
 

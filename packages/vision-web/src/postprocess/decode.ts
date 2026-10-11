@@ -66,13 +66,14 @@ export type DecodeOptions = {
    */
   maskCoefficients?: number;
   /**
-   * Called for every confident detection whose class is not a pothole.
+   * Called for every detection at or above `confidenceThreshold` whose class is not a
+   * pothole, with its confidence.
    *
    * A road model recognises more than we report - cracks, speed bumps, vehicles. Those
    * detections are still dropped, but counting them is how we learn what the detector
    * sees on our roads without inventing entities the data model has no place for.
    */
-  onSkippedClass?: (className: string) => void;
+  onSkippedClass?: (className: string, confidence: number) => void;
 };
 
 type ResolvedLayout = {
@@ -184,7 +185,7 @@ export function decodeDetections(tensor: RawTensor, options: DecodeOptions): Det
   for (const item of kept) {
     const className = classNames[item.payload.classId];
     if (!isPotholeClass(className)) {
-      if (className) options.onSkippedClass?.(className);
+      if (className) options.onSkippedClass?.(className, item.score);
       continue;
     }
     detections.push({

@@ -133,6 +133,29 @@ describe("decodeDetections", () => {
     expect(detections).toHaveLength(4);
   });
 
+  it.each([2, 10])(
+    "decoding lower, then filtering at the threshold, keeps exactly what decoding at it keeps (limit %i)",
+    (maxDetections) => {
+      // NMS takes the strongest first, so weaker boxes admitted by a lower decode
+      // threshold can neither suppress nor crowd out anything above it.
+      const head = channelsFirst([
+        [320, 320, 64, 32, 0.9],
+        [324, 322, 64, 32, 0.6],
+        [330, 318, 60, 30, 0.2],
+        [500, 400, 40, 40, 0.4],
+        [502, 401, 40, 40, 0.3],
+        [150, 450, 50, 30, 0.1],
+      ]);
+      const options = { ...BASE_OPTIONS, maxDetections };
+
+      const atThreshold = decodeDetections(head, { ...options, confidenceThreshold: 0.35 });
+      const lowered = decodeDetections(head, { ...options, confidenceThreshold: 0.05 });
+
+      expect(atThreshold).toHaveLength(2);
+      expect(lowered.filter((d) => d.confidence >= 0.35)).toEqual(atThreshold);
+    },
+  );
+
   it("drops classes that are not potholes from a multi-class model", () => {
     // [cx, cy, w, h, potholeScore, crackScore] - the crack wins its anchor.
     const rows = [
@@ -285,6 +308,21 @@ describe("counting classes we do not report", () => {
     expect(detections).toHaveLength(1);
     expect(detections[0]!.className).toBe("pothole");
     expect(seen.sort()).toEqual(["Crack", "Speed-Bump"]);
+  });
+
+  it("passes each skipped detection's confidence, so a caller can count at its own threshold", () => {
+    const seen: Record<string, number> = {};
+    decodeDetections(
+      multiClass([
+        [320, 320, 64, 32, 0.9, 0.0, 0.0, 0.0],
+        [500, 400, 40, 40, 0.0, 0.0, 0.0, 0.7],
+      ]),
+      { ...MULTI, onSkippedClass: (name, confidence) => (seen[name] = confidence) },
+    );
+
+    expect(Object.keys(seen).sort()).toEqual(["Crack", "Speed-Bump"]);
+    expect(seen.Crack).toBeCloseTo(0.9, 6);
+    expect(seen["Speed-Bump"]).toBeCloseTo(0.7, 6);
   });
 
   it("does not report classes that fell below the confidence threshold", () => {
