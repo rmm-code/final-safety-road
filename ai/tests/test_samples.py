@@ -282,3 +282,17 @@ def test_reuse_publishes_the_saved_analysis_and_crops_untouched(
     assert published == [(saved, ["track-001.jpg"])]
     assert (folder / "crops" / "track-001.jpg").read_bytes() == b"saved photo"
     assert json.loads((folder / "analysis.json").read_text()) == saved
+
+
+def test_samples_lower_the_confirmation_gate_without_touching_the_live_config() -> None:
+    from ai.inference.config import load_vision_config
+    from ai.samples.__main__ import sample_config
+    from ai.samples.catalog import CONFIRM_MIN_CONFIDENCE
+
+    config = sample_config()
+
+    assert config.tracking.min_max_confidence == CONFIRM_MIN_CONFIDENCE
+    assert config.detection.confidence_threshold == THRESHOLD
+    assert config.sample_fps == SAMPLE_FPS
+    # The live drive reads vision.yaml, which keeps the gate it was measured with.
+    assert load_vision_config().tracking.min_max_confidence == 0.55

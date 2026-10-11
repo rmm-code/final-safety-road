@@ -6,17 +6,25 @@ python -m ai.samples --api http://localhost:3000 [--only video-2] [--reuse]
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import shutil
 from pathlib import Path
 
 from ai.evaluation.merged_detector import MergedDetector
-from ai.inference.config import load_vision_config
+from ai.inference.config import VisionConfig, load_vision_config
 from ai.inference.detector import create_detector
 from ai.inference.video import _apply_overrides
 from ai.samples.analyse import analyse
-from ai.samples.catalog import MODELS, SAMPLE_FPS, SAMPLES, THRESHOLD
+from ai.samples.catalog import CONFIRM_MIN_CONFIDENCE, MODELS, SAMPLE_FPS, SAMPLES, THRESHOLD
 from ai.samples.publish import publish
+
+
+def sample_config() -> VisionConfig:
+    """vision.yaml with the sample setup's threshold, sample rate and confirmation gate."""
+    config = _apply_overrides(load_vision_config(), sample_fps=SAMPLE_FPS, confidence=THRESHOLD)
+    tracking = dataclasses.replace(config.tracking, min_max_confidence=CONFIRM_MIN_CONFIDENCE)
+    return dataclasses.replace(config, tracking=tracking)
 
 
 def reset_sample_output(folder: Path) -> None:
@@ -40,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
         "--reuse", action="store_true", help="publish saved analyses without re-running"
     )
     args = parser.parse_args(argv)
-    config = _apply_overrides(load_vision_config(), sample_fps=SAMPLE_FPS, confidence=THRESHOLD)
+    config = sample_config()
 
     for sample in SAMPLES:
         if args.only and sample.id not in args.only:

@@ -382,8 +382,18 @@ clip"), two blind AI judges, pooled reference in `ai/evaluation/pooled/` (`sets-
 - The merge runs three models per frame (and rezzzq fails on WebGPU), so it suits video
   files; this model at 0.25 is the best single model for a live drive.
 - Applied 2026-10-11: the product threshold is 0.25 (`ai/configs/vision.yaml`), and neither
-  the live drive nor the live demo has a threshold control. The published samples keep the merge at 0.35, frozen in
-  `SAMPLE_SETUP`.
+  the live drive nor the live demo has a threshold control. The live drive runs this model.
+- **Our own YOLO26m** (`pothole-yolo26m-public-0.1.0`, trained 2026-10-11 by `ai/yolo26/`
+  on RDD2022 + jaygala24 only, so it never saw the test videos; manhole, road marking and
+  repair are classes of their own) now drives the published samples: threshold 0.25 and a
+  samples-only confirmation gate of 0.40 (`ai/samples/catalog.py`; vision.yaml keeps 0.55,
+  which dropped real YOLO26 tracks peaking at 0.31-0.48). Judged, what reaches the map
+  (real / false / unsure): all four videos 37 / 4 / 19, Tashkent videos 1-3 17 / 4 / 18,
+  against the merge at 0.25: 41 / 2 / 6 and 8 / 2 / 4. It finds twice the merge's real
+  potholes on Tashkent footage, with more doubtful reports, and fewer on video 4 (portrait).
+  Frame level on the 254 judged Tashkent frames, every box judged, at 0.25: precision 51%,
+  recall 64% (YOLOv8m: 47% / 16%). Not on the live drive: 28 false boxes in 4 minutes of
+  smooth road at 0.25 (YOLOv8m: 1), and never driven. Results and judging: `docs/model-comparison.md`, `output/yolo26/`.
 
 ### Read a dataset's labels, not its class names
 

@@ -16,6 +16,12 @@ ONNX = Path("apps/web/public/models")
 MODELS = (ONNX / "candidates/yolo26m-public/pothole-yolo26m-public-0.1.0.onnx",)
 THRESHOLD = 0.25
 SAMPLE_FPS = 12.0
+# A track is reported once its best detection reaches this (vision.yaml's minMaxConfidence,
+# 0.55, was tuned on the YOLOv8m). Our YOLO26m scores real potholes lower, and at 0.55 it
+# dropped holes the judges call real (video 1 kept 1 of them). Samples only: the live
+# drive keeps vision.yaml. Not part of the analysis id, so a change means deleting the
+# published analyses before publishing again.
+CONFIRM_MIN_CONFIDENCE = 0.40
 # Must equal SAMPLE_SETUP.modelVersion in apps/web/features/videos/lib/samples.ts: it is
 # part of the analysis id, so publishing refuses an analysis made with any other model.
 MODEL_VERSION = "pothole-yolo26m-public-0.1.0"
