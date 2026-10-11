@@ -37,7 +37,7 @@ Read `PROJECT_SPEC.md` before implementing anything.
 
 ```text
 apps/web                 Next.js app, two route groups. The console is "Pitstop":
-                         (console) / dashboard of a sample video (?video=video-1..4), opened
+                         (console) / dashboard of a sample video (?video=video-1..3), opened
                                    from its published analysis (ai/samples)
                                    /analyze live demo: upload, analyse, save for everyone
                                    /videos samples & insights, /videos/[id] a saved video
@@ -63,7 +63,7 @@ infra/Caddyfile          HTTPS entry point for docker-compose.prod.yml (docs/dep
 infra/server/            the same stack behind an existing nginx (pitstop.mardonjon.me):
                          compose override, nginx site, deploy.sh
 ai/colab/                the model comparison on a Colab T4: notebook, bundle builder
-ai/samples/              analyses the four sample videos with the 3-model merge and
+ai/samples/              analyses the three sample videos with our YOLO26m and
                          publishes them: python -m ai.samples --api <site> [--reuse]
 docs/                    audit.md (2026-10-10), architecture.md, ai.md, deploy.md,
                          milestone-0.md - architecture.md, milestone-0.md and parts of
