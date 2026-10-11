@@ -1,0 +1,11 @@
+# Base inference dependencies (synthetic detector, ONNX inference, evaluation, tests).
+# Running or exporting an Ultralytics .pt checkpoint additionally needs
+# ai/requirements-model.txt, which pulls in torch.
+# Install into a Python 3.12 environment (see ai/README.md); newer interpreters do not
+# yet have wheels for the whole stack.
+numpy>=2.0
+opencv-python-headless>=4.10
+onnxruntime>=1.18
+PyYAML>=6.0
+pytest>=8.0
+ruff>=0.6

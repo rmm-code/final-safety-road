@@ -1,0 +1,22 @@
+{
+  "name": "pothole-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal road-damage intelligence system: pothole detection, tracking, severity and mapping.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @pothole/web",
+    "build": "npm run build --workspace @pothole/web",
+    "start": "npm run start --workspace @pothole/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

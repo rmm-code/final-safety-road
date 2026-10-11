@@ -1,0 +1,10 @@
+# The API image is built from apps/api. Settings read a `.env` from the working
+# directory, so a developer's local file - AUTH_DISABLED, a JWT secret - would otherwise
+# be baked into the image and silently configure production.
+.env
+.env.*
+__pycache__
+**/__pycache__
+.pytest_cache
+.ruff_cache
+app/tests

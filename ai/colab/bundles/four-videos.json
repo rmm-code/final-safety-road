@@ -1,0 +1,52 @@
+{
+ "title": "The four test videos: videos 1-3 (Tashkent dashcam) and video 4 (broken road, Russia)",
+ "models": {
+  "current_collabdoor_v8m": "models/pothole-detector.pt",
+  "mfranzon_yolo26": "models/candidates/mfranzon_yolo26.pt",
+  "rezzzq_yolo12s": "models/candidates/rezzzq_yolo12s.pt"
+ },
+ "clips": {
+  "video-1": {
+   "frames": "output/model-eval/sets/video-1/frames",
+   "macPreds": "output/model-eval/sets/video-1/preds"
+  },
+  "video-2": {
+   "frames": "output/model-eval/sets/video-2/frames",
+   "macPreds": "output/model-eval/sets/video-2/preds"
+  },
+  "video-3": {
+   "frames": "output/model-eval/sets/video-3/frames",
+   "macPreds": "output/model-eval/sets/video-3/preds"
+  },
+  "video-4": {
+   "frames": "output/model-eval/frames",
+   "macPreds": "output/model-eval/preds"
+  }
+ },
+ "scoring": {
+  "config": "ai/evaluation/pooled/sets-four-videos.json",
+  "macScores": "ai/evaluation/pooled/scores-four-videos.json"
+ },
+ "summary": [
+  [
+   "pothole",
+   "current_collabdoor_v8m",
+   0.35
+  ],
+  [
+   "pothole",
+   "current_collabdoor_v8m",
+   0.25
+  ],
+  [
+   "pothole",
+   "mfranzon_yolo26",
+   0.35
+  ],
+  [
+   "pothole",
+   "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+   0.35
+  ]
+ ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Pothole Intelligence",
+  "short_name": "Potholes",
+  "description": "Internal road-damage detection, tracking and mapping.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f5f4",
+  "theme_color": "#f3f5f4",
+  "orientation": "any",
+  "icons": []
+}

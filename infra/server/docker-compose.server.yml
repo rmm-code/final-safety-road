@@ -1,0 +1,51 @@
+# Production behind a host that already runs nginx with certbot (it owns 80 and 443), in
+# place of Caddy. Applied on top of docker-compose.prod.yml:
+#
+#   docker compose -p pitstop -f docker-compose.prod.yml -f infra/server/docker-compose.server.yml \
+#     --env-file .env.prod up -d --build
+#
+# Only the web app and storage are published, and only on localhost; nginx serves both on
+# one origin (infra/server/pitstop.nginx.conf), so photos, overlays and videos are
+# same-origin for the cross-origin isolated pages. Memory limits keep a shared host safe.
+services:
+  caddy:
+    profiles: ["caddy"]
+
+  postgres:
+    mem_limit: 512m
+
+  minio:
+    # The official image is gone from Docker Hub and quay.io. This is Bitnami's build of the
+    # same release (commit d10bb7e), run the way the official image ran.
+    image: bitnamilegacy/minio:2024.10.13-debian-12-r0@sha256:b9cd9bf699379711b8c7a7c44d5b209576dfe9df814a99bad1a7da4354cec54a
+    user: "0:0"
+    entrypoint: ["minio"]
+    command: ["server", "/data"]
+    # No mc or curl in this image, so the health endpoint is asked over bash's /dev/tcp.
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/9000 &&
+          printf 'GET /minio/health/live HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          head -n1 <&3 | grep -q ' 200 '
+    ports:
+      - "127.0.0.1:${MINIO_PORT:-9080}:9000"
+    mem_limit: 512m
+
+  api:
+    environment:
+      # Storage is served from the site's own origin, under /<bucket>/, so presigned forms
+      # and links are signed for the address a browser actually uses.
+      S3_PUBLIC_ENDPOINT_URL: https://${DOMAIN}
+      # Every request reaches the API through the web container, so the limiter sees one
+      # client; a demo with many visitors needs the higher shared budget.
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-1200}
+    mem_limit: 768m
+
+  web:
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3080}:3000"
+    mem_limit: 1g

@@ -1,0 +1,812 @@
+[
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "strict",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 73,
+   "fp_boxes": 26,
+   "positives_hit": 72,
+   "positives": 131
+  },
+  "precision": 0.737,
+  "precision_ci": [
+   0.57,
+   0.88
+  ],
+  "recall": 0.55,
+  "recall_ci": [
+   0.348,
+   0.754
+  ],
+  "f1": 0.63,
+  "f1_ci": [
+   0.456,
+   0.771
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "strict",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 46,
+   "fp_boxes": 16,
+   "positives_hit": 46,
+   "positives": 131
+  },
+  "precision": 0.742,
+  "precision_ci": [
+   0.582,
+   0.88
+  ],
+  "recall": 0.351,
+  "recall_ci": [
+   0.197,
+   0.525
+  ],
+  "f1": 0.477,
+  "f1_ci": [
+   0.304,
+   0.635
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "strict",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 17,
+   "fp_boxes": 6,
+   "positives_hit": 17,
+   "positives": 131
+  },
+  "precision": 0.739,
+  "precision_ci": [
+   0.611,
+   0.857
+  ],
+  "recall": 0.13,
+  "recall_ci": [
+   0.056,
+   0.203
+  ],
+  "f1": 0.221,
+  "f1_ci": [
+   0.102,
+   0.325
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "lenient",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 86,
+   "fp_boxes": 13,
+   "positives_hit": 84,
+   "positives": 161
+  },
+  "precision": 0.869,
+  "precision_ci": [
+   0.712,
+   0.986
+  ],
+  "recall": 0.522,
+  "recall_ci": [
+   0.345,
+   0.691
+  ],
+  "f1": 0.652,
+  "f1_ci": [
+   0.487,
+   0.781
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "lenient",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 55,
+   "fp_boxes": 7,
+   "positives_hit": 55,
+   "positives": 161
+  },
+  "precision": 0.887,
+  "precision_ci": [
+   0.733,
+   1.0
+  ],
+  "recall": 0.342,
+  "recall_ci": [
+   0.208,
+   0.478
+  ],
+  "f1": 0.493,
+  "f1_ci": [
+   0.333,
+   0.626
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m",
+  "mode": "lenient",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 21,
+   "fp_boxes": 2,
+   "positives_hit": 21,
+   "positives": 161
+  },
+  "precision": 0.913,
+  "precision_ci": [
+   0.769,
+   1.0
+  ],
+  "recall": 0.13,
+  "recall_ci": [
+   0.055,
+   0.194
+  ],
+  "f1": 0.228,
+  "f1_ci": [
+   0.102,
+   0.321
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 93,
+   "fp_boxes": 58,
+   "positives_hit": 82,
+   "positives": 131
+  },
+  "precision": 0.616,
+  "precision_ci": [
+   0.485,
+   0.725
+  ],
+  "recall": 0.626,
+  "recall_ci": [
+   0.398,
+   0.81
+  ],
+  "f1": 0.621,
+  "f1_ci": [
+   0.456,
+   0.737
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 67,
+   "fp_boxes": 38,
+   "positives_hit": 64,
+   "positives": 131
+  },
+  "precision": 0.638,
+  "precision_ci": [
+   0.488,
+   0.763
+  ],
+  "recall": 0.489,
+  "recall_ci": [
+   0.312,
+   0.613
+  ],
+  "f1": 0.553,
+  "f1_ci": [
+   0.39,
+   0.659
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 36,
+   "fp_boxes": 18,
+   "positives_hit": 35,
+   "positives": 131
+  },
+  "precision": 0.667,
+  "precision_ci": [
+   0.467,
+   0.867
+  ],
+  "recall": 0.267,
+  "recall_ci": [
+   0.183,
+   0.345
+  ],
+  "f1": 0.381,
+  "f1_ci": [
+   0.271,
+   0.467
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 114,
+   "fp_boxes": 37,
+   "positives_hit": 102,
+   "positives": 161
+  },
+  "precision": 0.755,
+  "precision_ci": [
+   0.616,
+   0.863
+  ],
+  "recall": 0.634,
+  "recall_ci": [
+   0.434,
+   0.793
+  ],
+  "f1": 0.689,
+  "f1_ci": [
+   0.523,
+   0.793
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 83,
+   "fp_boxes": 22,
+   "positives_hit": 79,
+   "positives": 161
+  },
+  "precision": 0.79,
+  "precision_ci": [
+   0.644,
+   0.914
+  ],
+  "recall": 0.491,
+  "recall_ci": [
+   0.331,
+   0.606
+  ],
+  "f1": 0.606,
+  "f1_ci": [
+   0.447,
+   0.705
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 38,
+   "fp_boxes": 16,
+   "positives_hit": 37,
+   "positives": 161
+  },
+  "precision": 0.704,
+  "precision_ci": [
+   0.524,
+   0.882
+  ],
+  "recall": 0.23,
+  "recall_ci": [
+   0.156,
+   0.302
+  ],
+  "f1": 0.346,
+  "f1_ci": [
+   0.247,
+   0.43
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 17,
+   "fp_boxes": 5,
+   "positives_hit": 17,
+   "positives": 131
+  },
+  "precision": 0.773,
+  "precision_ci": [
+   0.562,
+   0.941
+  ],
+  "recall": 0.13,
+  "recall_ci": [
+   0.053,
+   0.189
+  ],
+  "f1": 0.222,
+  "f1_ci": [
+   0.098,
+   0.306
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 13,
+   "fp_boxes": 5,
+   "positives_hit": 13,
+   "positives": 131
+  },
+  "precision": 0.722,
+  "precision_ci": [
+   0.5,
+   0.923
+  ],
+  "recall": 0.099,
+  "recall_ci": [
+   0.043,
+   0.14
+  ],
+  "f1": 0.174,
+  "f1_ci": [
+   0.079,
+   0.237
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 6,
+   "fp_boxes": 2,
+   "positives_hit": 6,
+   "positives": 131
+  },
+  "precision": 0.75,
+  "precision_ci": [
+   0.5,
+   1.0
+  ],
+  "recall": 0.046,
+  "recall_ci": [
+   0.01,
+   0.075
+  ],
+  "f1": 0.086,
+  "f1_ci": [
+   0.02,
+   0.137
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 21,
+   "fp_boxes": 1,
+   "positives_hit": 21,
+   "positives": 161
+  },
+  "precision": 0.955,
+  "precision_ci": [
+   0.897,
+   1.0
+  ],
+  "recall": 0.13,
+  "recall_ci": [
+   0.066,
+   0.187
+  ],
+  "f1": 0.23,
+  "f1_ci": [
+   0.123,
+   0.31
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 17,
+   "fp_boxes": 1,
+   "positives_hit": 17,
+   "positives": 161
+  },
+  "precision": 0.944,
+  "precision_ci": [
+   0.875,
+   1.0
+  ],
+  "recall": 0.106,
+  "recall_ci": [
+   0.056,
+   0.147
+  ],
+  "f1": 0.19,
+  "f1_ci": [
+   0.105,
+   0.254
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 7,
+   "fp_boxes": 1,
+   "positives_hit": 7,
+   "positives": 161
+  },
+  "precision": 0.875,
+  "precision_ci": [
+   0.75,
+   1.0
+  ],
+  "recall": 0.043,
+  "recall_ci": [
+   0.016,
+   0.07
+  ],
+  "f1": 0.083,
+  "f1_ci": [
+   0.031,
+   0.129
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 125,
+   "fp_boxes": 73,
+   "positives_hit": 125,
+   "positives": 131
+  },
+  "precision": 0.631,
+  "precision_ci": [
+   0.528,
+   0.733
+  ],
+  "recall": 0.954,
+  "recall_ci": [
+   0.924,
+   0.989
+  ],
+  "f1": 0.76,
+  "f1_ci": [
+   0.682,
+   0.83
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 89,
+   "fp_boxes": 48,
+   "positives_hit": 89,
+   "positives": 131
+  },
+  "precision": 0.65,
+  "precision_ci": [
+   0.535,
+   0.764
+  ],
+  "recall": 0.679,
+  "recall_ci": [
+   0.623,
+   0.726
+  ],
+  "f1": 0.664,
+  "f1_ci": [
+   0.587,
+   0.729
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "strict",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 43,
+   "fp_boxes": 23,
+   "positives_hit": 43,
+   "positives": 131
+  },
+  "precision": 0.652,
+  "precision_ci": [
+   0.494,
+   0.81
+  ],
+  "recall": 0.328,
+  "recall_ci": [
+   0.259,
+   0.389
+  ],
+  "f1": 0.437,
+  "f1_ci": [
+   0.353,
+   0.508
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 153,
+   "fp_boxes": 45,
+   "positives_hit": 153,
+   "positives": 161
+  },
+  "precision": 0.773,
+  "precision_ci": [
+   0.652,
+   0.875
+  ],
+  "recall": 0.95,
+  "recall_ci": [
+   0.921,
+   0.98
+  ],
+  "f1": 0.852,
+  "f1_ci": [
+   0.774,
+   0.914
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 109,
+   "fp_boxes": 28,
+   "positives_hit": 109,
+   "positives": 161
+  },
+  "precision": 0.796,
+  "precision_ci": [
+   0.674,
+   0.906
+  ],
+  "recall": 0.677,
+  "recall_ci": [
+   0.627,
+   0.724
+  ],
+  "f1": 0.732,
+  "f1_ci": [
+   0.664,
+   0.788
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26",
+  "mode": "lenient",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 49,
+   "fp_boxes": 17,
+   "positives_hit": 49,
+   "positives": 161
+  },
+  "precision": 0.742,
+  "precision_ci": [
+   0.59,
+   0.889
+  ],
+  "recall": 0.304,
+  "recall_ci": [
+   0.245,
+   0.361
+  ],
+  "f1": 0.432,
+  "f1_ci": [
+   0.359,
+   0.497
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 131,
+   "fp_boxes": 75,
+   "positives_hit": 131,
+   "positives": 131
+  },
+  "precision": 0.636,
+  "precision_ci": [
+   0.532,
+   0.736
+  ],
+  "recall": 1.0,
+  "recall_ci": [
+   1.0,
+   1.0
+  ],
+  "f1": 0.777,
+  "f1_ci": [
+   0.695,
+   0.848
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 96,
+   "fp_boxes": 50,
+   "positives_hit": 96,
+   "positives": 131
+  },
+  "precision": 0.658,
+  "precision_ci": [
+   0.544,
+   0.767
+  ],
+  "recall": 0.733,
+  "recall_ci": [
+   0.675,
+   0.775
+  ],
+  "f1": 0.693,
+  "f1_ci": [
+   0.613,
+   0.76
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "strict",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 48,
+   "fp_boxes": 24,
+   "positives_hit": 48,
+   "positives": 131
+  },
+  "precision": 0.667,
+  "precision_ci": [
+   0.517,
+   0.815
+  ],
+  "recall": 0.366,
+  "recall_ci": [
+   0.295,
+   0.418
+  ],
+  "f1": 0.473,
+  "f1_ci": [
+   0.387,
+   0.536
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.25,
+  "counts": {
+   "tp_boxes": 161,
+   "fp_boxes": 45,
+   "positives_hit": 161,
+   "positives": 161
+  },
+  "precision": 0.782,
+  "precision_ci": [
+   0.662,
+   0.881
+  ],
+  "recall": 1.0,
+  "recall_ci": [
+   1.0,
+   1.0
+  ],
+  "f1": 0.877,
+  "f1_ci": [
+   0.796,
+   0.937
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.35,
+  "counts": {
+   "tp_boxes": 118,
+   "fp_boxes": 28,
+   "positives_hit": 118,
+   "positives": 161
+  },
+  "precision": 0.808,
+  "precision_ci": [
+   0.689,
+   0.913
+  ],
+  "recall": 0.733,
+  "recall_ci": [
+   0.681,
+   0.774
+  ],
+  "f1": 0.769,
+  "f1_ci": [
+   0.698,
+   0.824
+  ]
+ },
+ {
+  "target": "pothole",
+  "detector": "current_collabdoor_v8m+mfranzon_yolo26+rezzzq_yolo12s",
+  "mode": "lenient",
+  "threshold": 0.5,
+  "counts": {
+   "tp_boxes": 55,
+   "fp_boxes": 17,
+   "positives_hit": 55,
+   "positives": 161
+  },
+  "precision": 0.764,
+  "precision_ci": [
+   0.615,
+   0.901
+  ],
+  "recall": 0.342,
+  "recall_ci": [
+   0.28,
+   0.393
+  ],
+  "f1": 0.472,
+  "f1_ci": [
+   0.4,
+   0.531
+  ]
+ }
+]

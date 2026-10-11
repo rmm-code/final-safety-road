@@ -1,0 +1,61 @@
+{
+ "title": "The published comparison: three Tashkent clips (2026-10-11)",
+ "models": {
+  "current_collabdoor_v8m": "models/pothole-detector.pt",
+  "mfranzon_yolo26": "models/candidates/mfranzon_yolo26.pt",
+  "rezzzq_yolo12s": "models/candidates/rezzzq_yolo12s.pt",
+  "rdd_yolov8m": "models/candidates/rdd_yolov8m.pt",
+  "rdd_yolo26m": "models/candidates/rdd_yolo26m.pt",
+  "rdd_yolo26s": "models/candidates/rdd_yolo26s.pt"
+ },
+ "clips": {
+  "tashkent-clip": {
+   "frames": "output/model-eval/frames",
+   "macPreds": "output/model-eval/preds"
+  },
+  "dashcam-0939": {
+   "frames": "output/model-eval/sets/dashcam-0939/frames",
+   "macPreds": "output/model-eval/sets/dashcam-0939/preds"
+  },
+  "dashcam-1215": {
+   "frames": "output/model-eval/sets/dashcam-1215/frames",
+   "macPreds": "output/model-eval/sets/dashcam-1215/preds"
+  }
+ },
+ "scoring": {
+  "config": "ai/evaluation/pooled/sets.json",
+  "macScores": "ai/evaluation/pooled/scores.json"
+ },
+ "summary": [
+  [
+   "pothole",
+   "current_collabdoor_v8m",
+   0.35
+  ],
+  [
+   "pothole",
+   "current_collabdoor_v8m",
+   0.25
+  ],
+  [
+   "pothole",
+   "mfranzon_yolo26",
+   0.35
+  ],
+  [
+   "pothole",
+   "current_collabdoor_v8m+mfranzon_yolo26",
+   0.35
+  ],
+  [
+   "crack",
+   "rezzzq_yolo12s",
+   0.35
+  ],
+  [
+   "crack",
+   "rezzzq_yolo12s+rdd_yolov8m+rdd_yolo26m+rdd_yolo26s",
+   0.35
+  ]
+ ]
+}

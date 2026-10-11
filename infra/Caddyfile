@@ -1,0 +1,18 @@
+# Public entry point. Caddy obtains and renews HTTPS certificates on its own, which is not
+# optional here: a phone allows the camera and GPS only on an HTTPS page.
+#
+# Two names, one server. Both need a DNS A record pointing at this machine.
+
+# The app. The API is reached through it (Next.js forwards /api/v1), so the phone only
+# ever talks to this one address.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy web:3000
+}
+
+# Object storage, for evidence photos. Its own name rather than a path under the app,
+# because every signed read link covers the host it was signed for: Caddy passes the
+# Host header through unchanged, so storage sees exactly the name the API signed.
+s3.{$DOMAIN} {
+	reverse_proxy minio:9000
+}

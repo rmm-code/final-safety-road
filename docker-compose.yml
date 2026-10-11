@@ -1,0 +1,83 @@
+# Local development infrastructure.
+#
+# Postgres with PostGIS and MinIO for object storage. Redis is deliberately absent: there
+# is nothing yet that needs a queue or a shared cache, and infrastructure introduced
+# before a requirement is infrastructure nobody maintains.
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: pothole
+      POSTGRES_PASSWORD: pothole
+      POSTGRES_DB: pothole
+    ports:
+      # 5433 on the host: developers commonly already run Postgres on 5432, and a silent
+      # collision sends migrations to the wrong database.
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pothole -d pothole"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./apps/api
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+asyncpg://pothole:pothole@postgres:5432/pothole
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET, e.g. `openssl rand -hex 32`}
+      # Demo only. The API refuses to start with this true in production.
+      AUTH_DISABLED: ${AUTH_DISABLED:-false}
+      DEMO_USER_EMAIL: ${DEMO_USER_EMAIL:-demo@example.com}
+      S3_ENDPOINT_URL: http://minio:9000
+      # The browser cannot resolve "minio", so upload URLs are signed for localhost.
+      S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      # Both local dev ports, because Next picks 3001 when something already holds 3000
+      # and a blocked API on a port shift looks like a broken feature. The Mini App is
+      # served from a public HTTPS origin; add that here when deploying.
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      # Telegram. Empty by default and the API runs fine without them: every Telegram
+      # route reports 503 until a token is configured. Set them in a local .env file,
+      # which is gitignored - a bot token is a credential and never belongs in Compose.
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
+      PUBLIC_WEB_URL: ${PUBLIC_WEB_URL:-http://localhost:3000}
+      CITIZEN_CONFIRMATIONS_TO_VERIFY: ${CITIZEN_CONFIRMATIONS_TO_VERIFY:-3}
+      CITIZEN_IMAGES_REQUIRE_REVIEW: ${CITIZEN_IMAGES_REQUIRE_REVIEW:-true}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    volumes:
+      - ./apps/api:/srv/api
+
+volumes:
+  postgres-data:
+  minio-data:

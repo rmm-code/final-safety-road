@@ -1,0 +1,32 @@
+{
+ "rule": "label where the two blind judges agree; 'unsure' where they disagree (scored both ways)",
+ "judges": {
+  "A": {
+   "1": "pothole",
+   "2": "not",
+   "3": "not",
+   "4": "not",
+   "5": "not",
+   "6": "not",
+   "7": "not"
+  },
+  "B": {
+   "1": "not",
+   "2": "not",
+   "3": "not",
+   "4": "not",
+   "5": "not",
+   "6": "not",
+   "7": "not"
+  }
+ },
+ "verdicts": {
+  "1": "unsure",
+  "2": "not",
+  "3": "not",
+  "4": "not",
+  "5": "not",
+  "6": "not",
+  "7": "not"
+ }
+}

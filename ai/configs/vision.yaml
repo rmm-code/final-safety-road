@@ -1,0 +1,136 @@
+# ---------------------------------------------------------------------------
+# Canonical vision pipeline configuration.
+#
+# This file is the SINGLE SOURCE OF TRUTH for detection, tracking, severity and
+# best-frame parameters. It is read directly by the Python inference CLI and
+# mirrored by packages/vision-web/src/config/vision-config.ts, which the browser
+# bundles. A unit test (vision-config.test.ts) parses this file and fails the build
+# if the two ever drift. Never hard-code these numbers anywhere else.
+#
+# Keys are camelCase so both languages can compare the structures literally.
+# ---------------------------------------------------------------------------
+
+model:
+  # Square network input edge, in pixels. Overridden per model by model.json.
+  inputSize: 640
+  classNames:
+    - pothole
+
+detection:
+  # Minimum detector confidence for a detection to enter the pipeline at all.
+  confidenceThreshold: 0.35
+  # IoU above which two raw boxes are considered the same object during NMS.
+  nmsIouThreshold: 0.45
+  maxDetections: 50
+
+tracking:
+  # IoU above which a detection is associated with an existing track.
+  # Deliberately lower than the NMS threshold: potholes move fast down the frame.
+  iouMatchThreshold: 0.2
+  # Analysed frames a track may go unmatched before it is finalised.
+  maxMissedFrames: 3
+  # Extrapolate the track's centre and size before matching (velocity + acceleration).
+  motionPrediction: true
+  # Fallback association for when boxes stop overlapping entirely. Close to the vehicle
+  # a pothole can travel further than its own height between analysed frames, so IoU
+  # alone drops exactly the close-range observations that severity depends on.
+  # A detection is still accepted when its centre lies within this multiple of the
+  # combined box radius of the predicted position...
+  centreDistanceGate: 1.2
+  # ...and its size is within this ratio of the predicted size.
+  scaleRatioGate: 3.0
+  # Promotion rules: a track becomes CONFIRMED only when all of these hold.
+  minObservations: 3
+  minMaxConfidence: 0.55
+  minDurationMs: 200
+
+triggerRegion:
+  # Fraction of frame height where the lower trigger zone begins. A tracked pothole
+  # entering this zone is close to the vehicle, which is when its location and its
+  # apparent size are most trustworthy.
+  topY: 0.72
+
+severity:
+  # Normalised bbox area that maps to a severity score of 1.0. Areas are compared
+  # with a square-root curve so small potholes remain distinguishable.
+  # With the default bands this places the small/medium boundary near a 45 cm defect
+  # and the medium/large boundary near a 1 m defect, seen from about 4 m away.
+  areaScoreReference: 0.04
+  # Visual severity bands applied to the 0..1 score.
+  smallMax: 0.3
+  mediumMax: 0.65
+  # Observation count at which track persistence is considered fully established.
+  persistenceReferenceObservations: 8
+  # Contributions to severity CONFIDENCE (not to the score). Sum to 1.0.
+  confidenceWeights:
+    base: 0.3
+    detection: 0.3
+    persistence: 0.2
+    triggerRegion: 0.2
+
+bestFrame:
+  # A box within this normalised distance of a frame edge is treated as clipped.
+  edgeMargin: 0.02
+  # Score multiplier applied to a fully clipped box (part of the pothole is off-frame).
+  edgeClipPenalty: 0.4
+  # Laplacian variance at which the sharpness term reaches 0.5.
+  sharpnessHalfSaturation: 200.0
+  # Exponents of a weighted product: conf^c * area^a * sharpness^s * centrality^n.
+  # A weight of 0 disables a term; unavailable terms default to a neutral 1.0.
+  weights:
+    confidence: 1.0
+    area: 1.0
+    sharpness: 0.6
+    centrality: 0.8
+
+analysis:
+  # Frames per second sampled from a VIDEO FILE.
+  #
+  # Higher than the live rate on purpose: analysing a file is an offline job with no
+  # real-time budget, so the only cost of sampling more often is time. It buys real
+  # accuracy, because confirmation needs three sightings and a pothole is only in view
+  # for a second or so. Measured on an 8.5 s clip: 6 FPS found 2 potholes with 3 tracks
+  # rejected; 12 FPS found 3 with only 2 rejected.
+  sampleFps: 12
+
+drive:
+  # Frames per second the LIVE camera is analysed at.
+  #
+  # Deliberately lower and separate: on a phone this is bounded by what the device can
+  # actually compute while also rendering a 30 FPS preview. Raising it past what the
+  # hardware sustains does not buy accuracy, it just makes frames queue and go stale.
+  targetFps: 6
+
+mock:
+  # Parameters of the deterministic synthetic engine. Output from this engine is
+  # ALWAYS labelled synthetic and never presented as model output.
+  #
+  # The simulation uses a simple pinhole road model so that synthetic potholes move
+  # and grow the way real ones do from a windshield-mounted phone: barely moving near
+  # the horizon, then accelerating and expanding as the vehicle closes in.
+  seed: 20260816
+  # Simulation clock for the synthetic detector. Independent of the real sample rates:
+  # it only sets how fast fabricated potholes approach, and changing the analysis rate
+  # should not silently change what the synthetic engine produces.
+  virtualFps: 6
+  minGapSeconds: 2.0
+  maxGapSeconds: 5.5
+  # Distance at which a pothole becomes visible, and where it leaves the frame bottom.
+  spawnDistanceM: 40.0
+  exitDistanceM: 3.0
+  # Image row of the horizon.
+  horizonY: 0.5
+  # Road projection: y = horizonY + perspectiveK / distanceM.
+  # 1.5 puts a defect 3 m ahead at the bottom edge and one 10 m ahead at y = 0.65.
+  perspectiveK: 1.5
+  # Lateral scale: normalisedWidth = widthM / (lateralSpreadK * distanceM).
+  # 1.4 corresponds to roughly a 70 degree horizontal field of view.
+  lateralSpreadK: 1.4
+  speedMpsMin: 8.0
+  speedMpsMax: 16.0
+  potholeWidthMinM: 0.25
+  potholeWidthMaxM: 1.3
+  # Apparent width at which the simulated detector reaches full confidence.
+  confidenceWidthReference: 0.06
+  dropoutProbability: 0.12
+  falsePositiveProbability: 0.05

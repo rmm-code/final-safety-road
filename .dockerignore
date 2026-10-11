@@ -1,0 +1,33 @@
+# Build context for apps/web/Dockerfile, which builds from the repository root because
+# the web app depends on the workspace packages beside it.
+#
+# The deployed model IS sent (apps/web/public/models): it is not in Git, so the build
+# context is the only way it reaches the image. Everything heavy and irrelevant is not.
+
+**/node_modules
+**/.next
+**/*.tsbuildinfo
+**/test-results
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.DS_Store
+
+.venv
+.git
+samples
+output
+models
+ai
+apps/api
+
+# Secrets and machine-local settings never go into an image.
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Regenerated inside the build from node_modules, so the image never carries a copy that
+# does not match the installed version.
+apps/web/public/ort
+apps/web/public/maplibre

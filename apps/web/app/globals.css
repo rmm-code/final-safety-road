@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/*
+ * Pitstop - visual tokens. Colour carries meaning, not decoration, and severity colours
+ * stay identical everywhere they appear (card, timeline, video overlay, map), so a viewer
+ * learns them once.
+ */
+@theme {
+  /*
+   * Pitstop: the visual language of the team's traffic-analytics console (design/ in the
+   * wiut project). A grey canvas and sidebar, one softly bordered off-white shell holding
+   * white cards, near-black for action, and four pastel data colours.
+   */
+  --color-app: #f1f1f1;
+  --color-sidebar: #eeeeee;
+  --color-shell: #fafafa;
+  --color-surface: #ffffff;
+  --color-raised: #ffffff;
+  --color-subtle: #f5f5f5;
+  --color-hover: #f6f6f6;
+  --color-fill: #f4f4f4;
+  --color-fill-strong: #e8e8e8;
+  --color-divider: #ebebeb;
+
+  --color-border: #e4e4e4;
+  --color-border-strong: #d4d4d4;
+
+  /* Text. Body and muted tones pass 4.5:1 on white. */
+  --color-primary: #252525;
+  --color-secondary: #515151;
+  --color-muted: #737373;
+
+  /* Action: near-black buttons and selection, as in Pitstop. */
+  --color-accent: #292929;
+  --color-accent-hover: #3b3b3b;
+
+  --color-blue: #6ba8ed;
+  --color-blue-soft: #eaf2fc;
+  --color-blue-strong: #3f86d9;
+  --color-green: #68bf9b;
+  --color-green-soft: #eaf6f0;
+  --color-yellow: #efb66c;
+  --color-yellow-soft: #fcf3e6;
+  --color-orange: #efb66c;
+  --color-orange-soft: #fcf3e6;
+  --color-red: #db7979;
+  --color-red-soft: #fbeded;
+  --color-purple: #9b86d9;
+  --color-purple-soft: #f2eefb;
+
+  /* Text partners for the soft fills; the pastels are too light to be read as text. */
+  --color-blue-ink: #2f6db3;
+  --color-green-ink: #2f7d5c;
+  --color-yellow-ink: #96621b;
+  --color-red-ink: #a94444;
+  --color-purple-ink: #6a52b3;
+
+  /* Severity, identical in every place it appears: card, timeline, overlay, map. */
+  --color-severity-small: #68bf9b;
+  --color-severity-medium: #efb66c;
+  --color-severity-large: #db7979;
+  --color-severity-unknown: #b5b5b5;
+
+  /* Verification state on the public map: a separate scale from severity. */
+  --color-state-unverified: #9b86d9;
+  --color-state-confirmed: #db7979;
+  --color-state-fixed: #68bf9b;
+
+  --color-series-1: #6ba8ed;
+  --color-series-2: #efb66c;
+  --color-series-3: #68bf9b;
+
+  --radius-sm: 5px;
+  --radius-md: 7px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --shadow-card: 0 1px 2px #00000006, 0 2px 7px #00000004;
+  --shadow-pop: 0 8px 28px #00000020, 0 2px 6px #0000000a;
+
+  --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+
+html,
+body {
+  background-color: var(--color-app);
+  color: var(--color-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Numeric readouts must not jitter as values change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--color-blue-soft);
+  color: var(--color-primary);
+}
+
+/* Browsers follow the element's own corner radius, so none is set here: declaring one
+   would override the component's radius while it holds focus. */
+*:focus-visible {
+  outline: 2px solid var(--color-blue-strong);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}

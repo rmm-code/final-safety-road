@@ -1,0 +1,10 @@
+{
+  "video": "tashkent-drive.mp4",
+  "durationSeconds": 480,
+  "_comment": "Template. Replace with real observations from a driven route. Note roughly when the vehicle reaches each pothole; +/-2s of slack is applied when matching.",
+  "potholes": [
+    { "id": "gt-1", "atSeconds": 12.5, "severity": "large", "note": "left lane, after the bridge" },
+    { "id": "gt-2", "atSeconds": 47.0, "severity": "medium" },
+    { "id": "gt-3", "atSeconds": 118.5, "severity": "small", "note": "near the kerb" }
+  ]
+}

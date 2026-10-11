@@ -1,0 +1,6 @@
+# Optional: running or exporting a real model. Pulls in torch (~2 GB).
+# Not needed for the synthetic detector, the evaluation tool, or the test suite.
+-r requirements.txt
+ultralytics>=8.4
+onnx>=1.17
+onnxslim>=0.1
