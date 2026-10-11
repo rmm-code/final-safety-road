@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { SAMPLES } from "../features/videos/lib/samples";
 
-// analysisId("demo:video-2", SAMPLE_SETUP): where the published analysis lives.
-const VIDEO_2 = "b74149fd-b3bb-88ac-a229-1e7a89f40dec";
+// Where the dashboard looks for Video 2's published analysis, whatever the current setup.
+const VIDEO_2 = SAMPLES.find((sample) => sample.id === "video-2")!.analysisId;
 const MERGED = "pothole-road-anomaly-1.0.0+mfranzon-yolo26m-1.0.0+rezzzq-yolo12s-1.0.0";
 
 const pothole = (trackId: string, severity: string, seconds: number) => ({
@@ -58,7 +59,7 @@ test("a sample opens from its published analysis, without downloading a detector
   await page.goto("/?video=video-2");
 
   await expect(page.getByText("Saved for everyone")).toBeVisible();
-  await expect(page.getByText(/3 open-source detectors, merged/i)).toBeVisible();
+  await expect(page.getByText(/3 detectors, merged/i)).toBeVisible();
   await expect(page.getByRole("link", { name: "mfranzon YOLO26m" })).toHaveAttribute("href", /huggingface\.co/);
   await page.waitForTimeout(1000);
   expect(models).toEqual([]);

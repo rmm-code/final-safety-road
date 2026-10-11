@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { CrossOriginIsolation } from "@/components/cross-origin-isolation";
 import { getAppConfig } from "@/lib/config";
 import { AnalyzeView } from "@/features/analyze/analyze-view";
-import { SAMPLES } from "@/features/videos/lib/samples";
 
 export const metadata: Metadata = {
   title: "Live demo",
@@ -14,7 +13,7 @@ export default function AnalyzePage() {
   // thresholds live in one place instead of being read ad hoc inside components.
   return (
     <CrossOriginIsolation>
-      <AnalyzeView config={getAppConfig()} variant="home" samples={SAMPLES} />
+      <AnalyzeView config={getAppConfig()} variant="home" />
     </CrossOriginIsolation>
   );
 }

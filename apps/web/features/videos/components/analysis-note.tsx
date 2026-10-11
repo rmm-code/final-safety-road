@@ -7,7 +7,7 @@ export function AnalysisNote({ settings }: { settings: AnalysisSettings }) {
   const sources = modelSources(settings.modelVersion);
   return (
     <p className="px-1 text-[12px] leading-[18px] text-muted">
-      {sources.length > 1 ? `${sources.length} open-source detectors, merged: ` : "Open-source detector: "}
+      {sources.length > 1 ? `${sources.length} detectors, merged: ` : "Detector: "}
       {sources.map((source, index) => (
         <Fragment key={source.label}>
           {index > 0 && ", "}

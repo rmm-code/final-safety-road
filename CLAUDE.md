@@ -385,7 +385,8 @@ clip"), two blind AI judges, pooled reference in `ai/evaluation/pooled/` (`sets-
   the live drive nor the live demo has a threshold control. The live drive runs this model.
 - **Our own YOLO26m** (`pothole-yolo26m-public-0.1.0`, trained 2026-10-11 by `ai/yolo26/`
   on RDD2022 + jaygala24 only, so it never saw the test videos; manhole, road marking and
-  repair are classes of their own) now drives the published samples: threshold 0.25 and a
+  repair are classes of their own) now drives the published samples (three since 2026-10-11:
+  the site's Videos 1-3 are the test videos 1, 2 and 4 named here): threshold 0.25 and a
   samples-only confirmation gate of 0.40 (`ai/samples/catalog.py`; vision.yaml keeps 0.55,
   which dropped real YOLO26 tracks peaking at 0.31-0.48). Judged, what reaches the map
   (real / false / unsure): all four videos 37 / 4 / 19, Tashkent videos 1-3 17 / 4 / 18,

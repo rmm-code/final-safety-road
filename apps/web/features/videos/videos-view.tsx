@@ -58,7 +58,7 @@ export function VideosView() {
 
   return (
     <div className="space-y-2.5">
-      <Panel icon="samples" title="Sample videos" subtitle="Our four test videos, analysed by three open-source detectors merged. Open one to see its dashboard." bodyClassName="p-3">
+      <Panel icon="samples" title="Sample videos" subtitle="Our test videos, already analysed. Open one to see its dashboard." bodyClassName="p-3">
         <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
           {SAMPLES.map((demo) => {
             const summary = savedDemo.get(demo.id);

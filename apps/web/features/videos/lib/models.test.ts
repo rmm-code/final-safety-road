@@ -13,4 +13,10 @@ describe("where a saved analysis's models come from", () => {
     expect(modelSources("pothole-road-anomaly-2.0.0")[0]?.label).toBe("collabdoor YOLOv8m");
     expect(modelSources("finetuned-tashkent-0.1.0")).toEqual([{ label: "finetuned-tashkent-0.1.0", url: null }]);
   });
+
+  it("names the team's own YOLO26m as trained by the team", () => {
+    expect(modelSources("pothole-yolo26m-public-0.1.0")).toEqual([
+      { label: "our YOLO26m, trained by the team on public road data", url: null },
+    ]);
+  });
 });

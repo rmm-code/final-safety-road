@@ -27,9 +27,11 @@ a badly broken road in Russia). Every number here comes from those four videos.
   suits analysing video files rather than a live drive on a phone. rezzzq does not run on
   WebGPU in our engine (it works on the slower WASM path).
 
-On the site, the four sample dashboards show our own YOLO26m's results since later on
-2026-10-11 (below), analysed offline and published by `python -m ai.samples`. The live demo
-and the live drive run the current model alone, in the browser, at 0.25 since 2026-10-11.
+On the site, the sample dashboards show our own YOLO26m's results since later on
+2026-10-11 (below), analysed offline and published by `python -m ai.samples`. There are three:
+the site's Videos 1, 2 and 3 are this document's videos 1, 2 and 4, and video 3 is shown by
+uploading it in the Live demo instead. The live demo and the live drive run the current model
+alone, in the browser, at 0.25 since 2026-10-11.
 
 ## Update, later 2026-10-11: our own YOLO26m
 

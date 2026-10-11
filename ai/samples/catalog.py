@@ -50,10 +50,12 @@ SAMPLES = (
             "label": "Osiyo Grand, off Labzak street",
         },
     ),
-    Sample("video-3", "Video 3", Path("samples/2026-05-24-13-36-41.mp4"), "2026-05-24T08:36:41Z"),
+    # The Tashkent streets clip (samples/2026-05-24-13-36-41.mp4) is no longer a sample: the
+    # team shows it by uploading it in the Live demo instead. The broken-road clip, "Video 4"
+    # in docs/model-comparison.md, took its place as Video 3 (2026-10-11).
     Sample(
-        "video-4",
-        "Video 4",
+        "video-3",
+        "Video 3",
         Path("samples/AQM2jwkRRAWtNQQQbVwCZYSJVeIPSrBIr5QGDdjDdjJNWxcqEKshz2co_ddLrKl3P71IMsc.mp4"),
         None,
     ),

@@ -1,7 +1,7 @@
 import type { AnalysisSettings } from "./analysis-id";
 
 /**
- * The four sample videos, served from public/demo. Mirrored by ai/samples/catalog.py, which
+ * The sample videos, served from public/demo. Mirrored by ai/samples/catalog.py, which
  * analyses them and publishes the results.
  */
 export type Sample = {
@@ -73,20 +73,9 @@ export const SAMPLES: Sample[] = [
     id: "video-3",
     analysisId: "6c354188-9578-816c-b18d-81165747d717",
     title: "Video 3",
-    description: "Residential streets, Tashkent",
+    description: "Badly broken road, Russia",
     src: "/demo/video-3.mp4",
     poster: "/demo/video-3.jpg",
-    durationLabel: "00:24",
-    recordedAt: "2026-05-24T08:36:41Z",
-    placement: null,
-  },
-  {
-    id: "video-4",
-    analysisId: "4a26dba3-c07f-8513-92f2-cbcb6cb56982",
-    title: "Video 4",
-    description: "Badly broken road, Russia",
-    src: "/demo/video-4.mp4",
-    poster: "/demo/video-4.jpg",
     durationLabel: "00:09",
     recordedAt: null,
     placement: null,

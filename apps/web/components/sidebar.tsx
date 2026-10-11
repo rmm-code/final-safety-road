@@ -130,13 +130,17 @@ export function Sidebar() {
         </ul>
 
         <div className="mt-auto pt-6">
-          <div className="flex items-center gap-2 rounded-lg border border-[#e2e2e2] bg-[#fafafa] p-2.5">
+          <a
+            href="https://github.com/rmm-code/final-safety-road"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Pitstop · CV track on GitHub (opens in a new tab)"
+            className="flex items-center gap-2 rounded-lg border border-[#e2e2e2] bg-[#fafafa] p-2.5 transition-colors hover:bg-[#f0f0f0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]"
+          >
             <Icon name="analyze" size={18} className="text-[#555]" />
-            <span className="flex-1 text-[12px] leading-4 text-[#444]">
-              Pitstop · CV track
-              <small className="mt-0.5 block text-[11px] text-[#666]">Pothole detection in the browser</small>
-            </span>
-          </div>
+            <span className="flex-1 text-[12px] leading-4 text-[#444]">Pitstop · CV track</span>
+            <Icon name="external" size={14} className="text-[#929292]" />
+          </a>
         </div>
       </aside>
     </>

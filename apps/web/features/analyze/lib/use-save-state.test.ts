@@ -51,19 +51,19 @@ describe("save state across runs", () => {
     expect(result.current.saveState).toEqual({ kind: "idle" });
   });
 
-  it("ignores a failed save that finishes after a sample was analysed", async () => {
+  it("ignores a failed save that finishes after a newer video was saved", async () => {
     const upload = slowUpload();
     const { result, saving } = startSave(upload);
 
     act(() => {
-      result.current.setSaveStateFor(result.current.beginRun(), { kind: "sample", href: "/?video=video-1" });
+      result.current.setSaveStateFor(result.current.beginRun(), { kind: "saved", href: "/videos/newer" });
     });
 
     await act(async () => {
       upload.reject(new Error("network down"));
       await saving();
     });
-    expect(result.current.saveState).toEqual({ kind: "sample", href: "/?video=video-1" });
+    expect(result.current.saveState).toEqual({ kind: "saved", href: "/videos/newer" });
   });
 
   it("reports a failed save of the current run", async () => {

@@ -16,13 +16,18 @@ describe("the sample videos", () => {
 
   it("open the default sample for an unknown or missing id", () => {
     expect(findSample("video-3").id).toBe("video-3");
+    expect(findSample("video-4").id).toBe(DEFAULT_SAMPLE_ID);
     expect(findSample("nope").id).toBe(DEFAULT_SAMPLE_ID);
     expect(findSample(null).id).toBe(DEFAULT_SAMPLE_ID);
   });
 
   it("are recognised by poster path, and an upload is not a sample", () => {
-    expect(sampleOf("/demo/video-4.jpg")?.id).toBe("video-4");
+    expect(sampleOf("/demo/video-3.jpg")?.id).toBe("video-3");
     expect(sampleOf("http://localhost:9000/pothole-evidence/videos/x/poster.jpg")).toBeUndefined();
     expect(sampleOf(null)).toBeUndefined();
+  });
+
+  it("are videos 1, 2 and 3", () => {
+    expect(SAMPLES.map((sample) => sample.id)).toEqual(["video-1", "video-2", "video-3"]);
   });
 });
